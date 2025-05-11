@@ -25,7 +25,7 @@ const hospitalSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    profilePhoto: {
+    logo: {
         type: String,
     },
     isVerified: {
