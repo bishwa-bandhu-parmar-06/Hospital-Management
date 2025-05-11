@@ -7,8 +7,13 @@ const port = process.env.PORT || 3000;
 // importing Routes Folder
 const usersRoutes = require("./routes/usersRoutes");
 const getAllRoutes = require("./routes/getAllRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
+
+// importing Database Connection
 const connectDB = require("./database/db");
 connectDB();
+
+
 
 app.get("/", (req, res) =>{
     res.send("Hello World!");
@@ -21,7 +26,10 @@ app.use(express.urlencoded({extended:true}));
 // Routes Middleware
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/getAll", getAllRoutes);
+app.use("/api/v1/doctor", doctorRoutes);
 
+
+// Starting the server
 app.listen(port, ()=>{
     console.log(`Server is Running on Port : http://localhost:${port}`)
 })
