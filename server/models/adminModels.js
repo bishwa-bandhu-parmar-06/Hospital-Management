@@ -27,7 +27,17 @@ const adminSchema = new mongoose.Schema({
     },
     otp: {
         type: String
-    }
+    },
+    role: {
+        type: String,
+        enum: ['patient', 'doctor', 'hospital', 'admin'],
+        default: 'admin'
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'approved' // Patients are auto-approved
+    },
 }, { timestamps: true });
 
 const Admin = mongoose.model('Admin', adminSchema);

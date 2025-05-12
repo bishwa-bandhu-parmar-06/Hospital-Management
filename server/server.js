@@ -1,49 +1,69 @@
-const dotenv = require("dotenv");
-dotenv.config();
+require('dotenv').config();
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
+const connectDB = require('./database/db');
 
-// importing Routes Folder
+// Import routes
 const usersRoutes = require("./routes/usersRoutes");
 const getAllRoutes = require("./routes/getAllRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const adminRoutes = require("./routes/admin.routes");
 const hospitalRoutes = require("./routes/hospitalRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
 
-// importing cors
-const cors = require("cors");
+// Initialize app
+const app = express();
+const server = http.createServer(app);
 
-// using cors
-app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  }
+});
 
-// importing Database Connection
-const connectDB = require("./database/db");
+// Attach io to app for use in routes
+app.set('io', io);
+
+// Database connection
 connectDB();
 
-
-
-app.get("/", (req, res) =>{
-    res.send("Hello World!");
-})
-
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(cors({
+  origin: process.env.CLIENT_URL || "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-// Routes Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.get("/", (req, res) => {
+  res.send("Hospital Management System API");
+});
+
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/getAll", getAllRoutes);
 app.use("/api/v1/doctor", doctorRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/hospital", hospitalRoutes);
+app.use("/api/v1/appointment", appointmentRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something broke!', error: err.message });
+});
 
-// Starting the server
-app.listen(port, ()=>{
-    console.log(`Server is Running on Port : http://localhost:${port}`)
-})
+// Setup Socket.io
+require('../server/services/socket')(io);
+
+// Start server
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
