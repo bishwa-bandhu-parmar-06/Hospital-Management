@@ -149,9 +149,13 @@ module.exports.usersProfile = async(req, res) =>{
 // For updating the user profile
 module.exports.updateUserDetails = async (req, res) => {
   try {
+    const {name, email, mobile} = req.body;
+    // const email = req.body;
+    // const mobile = req.body;
+    // console.log("Updating user details: ", req.body);
     const userId = req.user.id;
-    const { name, email, mobile } = req.body;
-
+    // console.log("User ID: ", userId);
+    
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(400).json({ message: "User Not Found" });
@@ -168,10 +172,62 @@ module.exports.updateUserDetails = async (req, res) => {
     }
 
     await user.save();
-
     return res.status(200).json({ message: "User Details Updated Successfully" });
   } catch (error) {
     console.error("Error in updateUserDetails: ", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// For resending the OTP
+module.exports.resendUserOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found" });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    user.otp = otp;
+    await user.save();
+    await sendOtpEmail(email, user.name, otp);
+    return res.status(200).json({ message: "OTP sent to your email" });
+  }
+  catch (error) {
+    console.error("Error in resendUserOtp: ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+// For user logout
+module.exports.logoutUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found" });
+    }
+    // Invalidate the token or perform any other logout logic
+    return res.status(200).json({ message: "User Logged Out Successfully" });
+  } catch (error) {
+    console.error("Error in logoutUser: ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+
+// For deleting the user account
+module.exports.deleteUserAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found" });
+    }
+    await userModel.findByIdAndDelete(userId);
+    return res.status(200).json({ message: "User Account Deleted Successfully" });
+  } catch (error) {
+    console.error("Error in deleteUserAccount: ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
