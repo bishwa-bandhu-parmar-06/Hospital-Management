@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {registerDoctor, verifyRegisterEmailOtp, loginDoctor, verifyLoginOtp, updateDoctorProfile, getDoctorProfile} = require("../controllers/doctorController");
+const {registerDoctor, verifyRegisterEmailOtp, loginDoctor, verifyLoginOtp, updateDoctorProfile, getDoctorProfile, resendDoctorOtp, logoutDoctor, deleteDoctorProfile} = require("../controllers/doctorController");
 const {authenticate} = require("../middlewares/authMiddleware")
 const {upload} = require("../config/multer")
 // Route for doctor registration
@@ -17,5 +17,13 @@ router.post("/verify-login-otp", verifyLoginOtp);
 router.put("/update-profile", authenticate, upload.single("profilePhoto"),updateDoctorProfile);
 // Route for getting doctor profile
 router.get("/profile", authenticate, getDoctorProfile);
+
+// Route for resending doctor OTP
+router.post("/resend-otp", authenticate, resendDoctorOtp);
+
+// Route for doctor logout
+router.post("/logout", authenticate, logoutDoctor);
+// Route for deleting doctor profile
+router.delete("/delete-doctor", authenticate, deleteDoctorProfile);
 
 module.exports = router;

@@ -8,6 +8,18 @@ const port = process.env.PORT || 3000;
 const usersRoutes = require("./routes/usersRoutes");
 const getAllRoutes = require("./routes/getAllRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
+const adminRoutes = require("./routes/admin.routes");
+const hospitalRoutes = require("./routes/hospitalRoutes");
+
+// importing cors
+const cors = require("cors");
+
+// using cors
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 // importing Database Connection
 const connectDB = require("./database/db");
@@ -27,6 +39,8 @@ app.use(express.urlencoded({extended:true}));
 app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/getAll", getAllRoutes);
 app.use("/api/v1/doctor", doctorRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/hospital", hospitalRoutes);
 
 
 // Starting the server

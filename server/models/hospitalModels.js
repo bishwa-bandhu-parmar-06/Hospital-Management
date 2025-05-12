@@ -8,7 +8,7 @@ const hospitalSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phone: {
+    mobile: {
         type: String,
         required: true,
         match: [/^[6-9]\d{9}$/, 'Please enter a valid phone number.'],

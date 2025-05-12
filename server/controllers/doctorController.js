@@ -176,3 +176,69 @@ module.exports.getDoctorProfile = async(req, res) =>{
     return res.status(500).json({message: "Internal Server Error from getting Doctor Profile."})
   }
 }
+
+// for resend otp
+module.exports.resendDoctorOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const doctor = await doctorModel.findOne({ email });
+    if (!doctor) {
+      return res
+        .status(400)
+        .json({ message: "Doctor Not Found From Resend Doctor Otp" });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    doctor.otp = otp;
+    await doctor.save();
+    await sendOtpEmail(email, doctor.name, otp);
+    return res.status(200).json({ message: "OTP sent to your email" });
+  }
+  catch (error) {
+    console.error("Error While Resending Doctor Otp", error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error from Resending Doctor Otp" });
+  }
+}
+// For doctor logout
+module.exports.logoutDoctor = async (req, res) => {
+  try {
+    const doctorId = req.user.id;
+    const doctor = await doctorModel.findById(doctorId);  
+    if (!doctor) {
+      return res
+        .status(400)
+        .json({ message: "Doctor Not Found From Logout Doctor" });
+    }
+    doctor.isVerified = false;
+    await doctor.save();
+    return res.status(200).json({ message: "Doctor Logged Out Successfully" });
+  }
+  catch (error) {
+    console.error("Error While Logging Out Doctor", error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error from Doctor Logout" });
+  }
+}
+
+// For deleting doctor profile
+module.exports.deleteDoctorProfile = async(req, res) =>{
+  try {
+    const doctorId = req.user.id;
+    const doctor = await doctorModel.findById(doctorId);  
+    if (!doctor) {
+      return res
+        .status(400)
+        .json({ message: "Doctor Not Found From Delete Doctor Profile" });
+    }
+    await doctorModel.findByIdAndDelete(doctorId);
+    return res.status(200).json({ message: "Doctor Profile Deleted Successfully" });
+  }
+  catch (error) {
+    console.error("Error While Deleting Doctor Profile", error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error from Deleting Doctor Profile" });
+  }
+};
