@@ -1,4 +1,6 @@
 const adminModel = require("../models/adminModels");
+const Doctor = require("../models/doctorModels");
+const Hospital = require("../models/hospitalModels")
 const jwt = require("jsonwebtoken");
 const transporter = require("../config/nodeMailer");
 
@@ -190,3 +192,114 @@ module.exports.deleteAdminProfile = async(req, res) =>{
         return res.status(500).json({message: "Internal Server Error from deleteAdminProfile"});
     }
 }
+
+
+// Admin approval for doctors
+module.exports.approveDoctor = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const { action, reason } = req.body;
+        
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor Not Found" });
+        }
+
+        if (action === "approve") {
+            doctor.status = "approved";
+            await doctor.save(); // Save the document first
+            await sendApprovalEmail(doctor.email, doctor.name, "doctor", reason);
+            return res.status(200).json({ 
+                message: "Doctor approved successfully",
+                doctor 
+            });
+        } 
+        else if (action === "reject") {
+            doctor.status = 'rejected';
+            await doctor.save(); // Save the document first
+            await sendRejectionEmail(doctor.email, doctor.name, 'doctor', reason);
+            return res.status(200).json({ 
+                message: "Doctor rejected successfully",
+                doctor 
+            });
+        } 
+        else {
+            return res.status(400).json({ 
+                message: "Invalid action. Use 'approve' or 'reject'" 
+            });
+        }
+    } catch (error) {
+        console.error("Error in approveDoctor: ", error);
+        return res.status(500).json({ 
+            message: "Internal Server Error from approveDoctor",
+            error: error.message 
+        });
+    }
+}
+
+// Admin approval for hospitals
+module.exports.approveHospital = async (req, res) => {
+    try {
+        const { hospitalId } = req.params;
+        const { action, reason } = req.body;
+        
+        const hospital = await Hospital.findById(hospitalId);
+        if (!hospital) return res.status(404).json({ message: "Hospital not found" });
+        
+        if (action === 'approve') {
+            hospital.status = 'approved';
+            await sendApprovalEmail(hospital.email, hospital.name, 'hospital');
+        } else if (action === 'reject') {
+            hospital.status = 'rejected';
+            await sendRejectionEmail(hospital.email, hospital.name, 'hospital', reason);
+        }
+        
+        await hospital.save();
+        return res.status(200).json({ message: `Hospital ${action}ed successfully` });
+    } catch (error) {
+        console.error("Error in approveHospital:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get pending approvals
+module.exports.getPendingApprovals = async (req, res) => {
+    try {
+        const pendingDoctors = await Doctor.find({ status: 'pending' });
+        const pendingHospitals = await Hospital.find({ status: 'pending' });
+        
+        return res.status(200).json({
+            pendingDoctors,
+            pendingHospitals
+        });
+    } catch (error) {
+        console.error("Error in getPendingApprovals:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Helper functions for sending emails
+const sendApprovalEmail = async (email, name, userType) => {
+    const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: email,
+        subject: `Your ${userType} account has been approved`,
+        html: `<p>Hello ${name},</p>
+               <p>Your ${userType} account has been approved by the admin.</p>
+               <p>You can now login and start using our platform.</p>`
+    };
+    await transporter.sendMail(mailOptions);
+};
+
+const sendRejectionEmail = async (email, name, userType, reason) => {
+    const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: email,
+        subject: `Your ${userType} account approval status`,
+        html: `<p>Hello ${name},</p>
+               <p>Your ${userType} account registration has been rejected.</p>
+               <p>Reason: ${reason}</p>
+               <p>Please contact support if you have any questions.</p>`
+    };
+    await transporter.sendMail(mailOptions);
+};

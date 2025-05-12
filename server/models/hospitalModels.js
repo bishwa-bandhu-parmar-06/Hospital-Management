@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const hospitalSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -35,6 +36,22 @@ const hospitalSchema = new mongoose.Schema({
     otp: {
         type: String,
     },
+    role: {
+        type: String,
+        default: 'hospital'
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
+    documents: [{
+        name: String,
+        url: String,
+        verified: Boolean
+    }],
+    facilities: [String],
+    departments: [String]
 }, { timestamps: true });
 
 const Hospital = mongoose.model('Hospital', hospitalSchema);

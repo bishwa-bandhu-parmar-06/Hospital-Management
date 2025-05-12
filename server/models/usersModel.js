@@ -28,7 +28,22 @@ const userSchema = new mongoose.Schema({
     },
     otp: {
         type: String
-    }
+    },
+    role: {
+        type: String,
+        enum: ['patient', 'doctor', 'hospital', 'admin'],
+        default: 'patient'
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'approved' // Patients are auto-approved
+    },
+    documents: [{
+        name: String,
+        url: String,
+        verified: Boolean
+    }]
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
