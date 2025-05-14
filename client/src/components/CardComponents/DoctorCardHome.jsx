@@ -1,87 +1,21 @@
+// components/DoctorCardSlider.jsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { doctorsData } from '../../data/doctorsData';
 
 const DoctorCardSlider = () => {
-  const doctors = [
-    {
-      id: 1,
-      name: "Dr. John Doe",
-      specialty: "Cardiology",
-      experience: "12",
-      availability: "Mon-Fri",
-      hours: "9 AM - 5 PM",
-      location: "City Hospital",
-      room: "101",
-      image: "https://via.placeholder.com/150"
-    },
-    {
-      id: 2,
-      name: "Dr. Jane Smith",
-      specialty: "Neurology",
-      experience: "8",
-      availability: "Tue-Sat",
-      hours: "10 AM - 6 PM",
-      location: "City Hospital",
-      room: "205",
-      image: "https://via.placeholder.com/150"
-    },
-    {
-      id: 3,
-      name: "Dr. Robert Johnson",
-      specialty: "Pediatrics",
-      experience: "15",
-      availability: "Mon-Wed-Fri",
-      hours: "8 AM - 4 PM",
-      location: "Children's Hospital",
-      room: "312",
-      image: "https://via.placeholder.com/150"
-    },
-    {
-      id: 4,
-      name: "Dr. Emily Davis",
-      specialty: "Dermatology",
-      experience: "7",
-      availability: "Thu-Sun",
-      hours: "11 AM - 7 PM",
-      location: "Skin Care Center",
-      room: "42",
-      image: "https://via.placeholder.com/150"
-    },
-    {
-      id: 5,
-      name: "Dr. Michael Wilson",
-      specialty: "Orthopedics",
-      experience: "10",
-      availability: "Mon-Fri",
-      hours: "8 AM - 3 PM",
-      location: "City Hospital",
-      room: "118",
-      image: "https://via.placeholder.com/150"
-    },
-    {
-      id: 6,
-      name: "Dr. Sarah Brown",
-      specialty: "Ophthalmology",
-      experience: "9",
-      availability: "Wed-Sat",
-      hours: "9 AM - 5 PM",
-      location: "Eye Care Center",
-      room: "76",
-      image: "https://via.placeholder.com/150"
-    }
-  ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const cardsToShow = 4;
 
   const nextSlide = () => {
     setCurrentIndex(prev => 
-      prev + 1 > doctors.length - cardsToShow ? 0 : prev + 1
+      prev + 1 > doctorsData.length - cardsToShow ? 0 : prev + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentIndex(prev => 
-      prev === 0 ? doctors.length - cardsToShow : prev - 1
+      prev === 0 ? doctorsData.length - cardsToShow : prev - 1
     );
   };
 
@@ -121,13 +55,13 @@ const DoctorCardSlider = () => {
 
           {/* Doctors Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full transition-transform duration-300">
-            {doctors.slice(currentIndex, currentIndex + cardsToShow).map((doctor) => (
+            {doctorsData.slice(currentIndex, currentIndex + cardsToShow).map((doctor) => (
               <div 
                 key={doctor.id}
                 className="w-82 h-96 bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center transition-all hover:scale-105 hover:shadow-xl"
               >
-                <div className="w-28 h-28 rounded-full  border-2 border-secondary flex items-center justify-center overflow-hidde">
-                  <img src={doctor.image} alt={doctor.name} className="w-28 h-28 object-cover rounded-full"  />
+                <div className="w-28 h-28 rounded-full border-2 border-secondary flex items-center justify-center">
+                  <img src={doctor.image} alt={doctor.name} className="w-28 h-28 object-cover rounded-full" />
                 </div>
                 <h2 className="text-xl font-bold text-textPrimary mt-4">{doctor.name}</h2>
                 <div className="text-center flex items-center justify-center mt-2 space-x-3">
@@ -144,9 +78,12 @@ const DoctorCardSlider = () => {
                   <p className="text-sm text-gray-600">Location: {doctor.location}</p>
                   <p className="text-sm text-gray-600">Room No: {doctor.room}</p>
                 </div>
-                <button className="mt-4 px-6 py-2 bg-secondary text-white rounded-full font-medium hover:bg-primary transition-colors duration-300 shadow-md hover:shadow-lg">
+                <Link 
+                  to={`/doctors/${doctor.id}`}
+                  className="mt-4 px-6 py-2 bg-secondary text-white rounded-full font-medium hover:bg-primary transition-colors duration-300 shadow-md hover:shadow-lg"
+                >
                   View Profile
-                </button>
+                </Link>
               </div>
             ))}
           </div>
@@ -154,7 +91,7 @@ const DoctorCardSlider = () => {
 
         {/* Dots Indicator */}
         <div className="flex justify-center mt-8 space-x-2">
-          {Array.from({ length: doctors.length - cardsToShow + 1 }).map((_, index) => (
+          {Array.from({ length: doctorsData.length - cardsToShow + 1 }).map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
