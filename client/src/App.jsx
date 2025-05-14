@@ -50,10 +50,14 @@ import ServiceDetail from './pages/ServiceDetail';
 import NotFound from './pages/NotFound';
 import AuthPage from './pages/AuthPage';
 import DoctorDetail from './pages/DoctorDetail';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   return (
     <Router>
       <Navbar />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

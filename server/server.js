@@ -12,7 +12,8 @@ const doctorRoutes = require("./routes/doctorRoutes");
 const adminRoutes = require("./routes/admin.routes");
 const hospitalRoutes = require("./routes/hospitalRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
-
+const contactRoutes = require('./routes/contactRoutes.js');
+const feedbackRoutes = require('./routes/feedbackRoutes.js');
 // Initialize app
 const app = express();
 const server = http.createServer(app);
@@ -52,7 +53,8 @@ app.use("/api/v1/doctor", doctorRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/hospital", hospitalRoutes);
 app.use("/api/v1/appointment", appointmentRoutes);
-
+app.use('/api/v1/contact', contactRoutes);
+app.use('/api/v1/feedback', feedbackRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -65,5 +67,5 @@ require('../server/services/socket')(io);
 // Start server
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on port http://localhost:${port}`);
 });

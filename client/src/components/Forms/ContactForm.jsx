@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaPaperPlane, FaSpinner } from 'react-icons/fa';
-
+import { sendContactMessage } from '../../utils/contactApi'; // Adjust the import based on your project structure
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,8 +24,7 @@ const ContactForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await sendContactMessage(formData);
       setSubmitStatus('success');
       setFormData({
         name: '',
@@ -35,11 +34,11 @@ const ContactForm = () => {
       });
     } catch (error) {
       setSubmitStatus('error');
+      console.error('Submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className=" p-8 rounded-xl  border border-[var(--color-accent)]">
       <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Send Us a Message</h2>
