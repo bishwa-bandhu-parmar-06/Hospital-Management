@@ -10,6 +10,7 @@ export default {
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
         accent: 'var(--color-accent)',
+        accentlight: 'var(--color-accentlight)',
         textPrimary: 'var(--color-text-primary)',
         background: 'var(--color-background)',
         error: 'var(--color-error)',
