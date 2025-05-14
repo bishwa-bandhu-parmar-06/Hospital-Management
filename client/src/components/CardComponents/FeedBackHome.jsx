@@ -1,42 +1,28 @@
-import React, { useState } from 'react';
+// File: FeedBackHome.jsx
+// Description: This component fetches and displays feedback from patients, allowing users to navigate through the feedback using arrows or dots.
+import React, { useState, useEffect } from 'react';
+import { getFeedbacks } from '../../utils/feedbackApi'; // Adjust the import path as needed
 
 const FeedBackHome = () => {
-  const feedbacks = [
-    {
-      id: 1,
-      quote: "The care I received was exceptional. The doctors took time to listen to my concerns and explained everything clearly.",
-      author: "Sarah Johnson",
-      role: "Cardiac Patient",
-      rating: 5,
-      date: "March 15, 2023"
-    },
-    {
-      id: 2,
-      quote: "From the moment I walked in, I felt welcomed. The staff was professional and the facilities were top-notch.",
-      author: "Michael Chen",
-      role: "Orthopedic Patient",
-      rating: 4,
-      date: "April 2, 2023"
-    },
-    {
-      id: 3,
-      quote: "My recovery was faster than expected thanks to the personalized treatment plan. Highly recommend this hospital!",
-      author: "Emily Rodriguez",
-      role: "Post-Surgery Patient",
-      rating: 5,
-      date: "February 28, 2023"
-    },
-    {
-      id: 3,
-      quote: "My recovery was faster than expected thanks to the personalized treatment plan. Highly recommend this hospital!",
-      author: "Emily Rodriguez",
-      role: "Post-Surgery Patient",
-      rating: 5,
-      date: "February 28, 2023"
-    }
-  ];
-
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentFeedback, setCurrentFeedback] = useState(0);
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await getFeedbacks();
+        setFeedbacks(response.data); // Adjusted to match your API response structure
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchFeedbacks();
+  }, []);
 
   const nextFeedback = () => {
     setCurrentFeedback((prev) => (prev === feedbacks.length - 1 ? 0 : prev + 1));
@@ -59,6 +45,36 @@ const FeedBackHome = () => {
     ));
   };
 
+  if (loading) {
+    return (
+      <div className="py-16 bg-accentlight text-center">
+        <p>Loading feedback...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-16 bg-accentlight text-center text-red-500">
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (feedbacks.length === 0) {
+    return (
+      <div className="py-16 bg-accentlight text-center">
+        <p>No feedback available yet.</p>
+      </div>
+    );
+  }
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div className="py-16 bg-accentlight">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,19 +87,19 @@ const FeedBackHome = () => {
           {/* Feedback Card */}
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
             <div className="flex justify-center mb-4">
-              {renderStars(feedbacks[currentFeedback].rating)}
+              {renderStars(5)}
             </div>
             <blockquote className="text-lg text-textPrimary italic mb-6">
-              "{feedbacks[currentFeedback].quote}"
+              "{feedbacks[currentFeedback].feedback}"
             </blockquote>
             <div className="text-secondary font-semibold">
-              {feedbacks[currentFeedback].author}
+              {feedbacks[currentFeedback].name}
             </div>
             <div className="text-gray-600 text-sm mb-2">
-              {feedbacks[currentFeedback].role}
+              {feedbacks[currentFeedback].userType}
             </div>
             <div className="text-gray-500 text-xs">
-              {feedbacks[currentFeedback].date}
+              {formatDate(feedbacks[currentFeedback].createdAt)}
             </div>
           </div>
 
