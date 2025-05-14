@@ -1,7 +1,7 @@
 // components/HomeDepartments.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { departmentsData } from '../data/departmentsData';
+import { departmentsData } from '../../data/departmentsData';
 import DepartmentCard from './DepartmentCard';
 
 const HomeDepartments = () => {

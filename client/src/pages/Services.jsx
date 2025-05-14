@@ -140,7 +140,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { servicesData, serviceCategories } from '../data/servicesData';
 import * as FaIcons from 'react-icons/fa';
-import ServiceCard from '../components/ServiceCard';
+import ServiceCard from '../components/CardComponents/ServiceCard';
 const Services = () => {
   return (
     <div className="bg-[var(--color-background)]">

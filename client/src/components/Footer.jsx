@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-import FeedbackForm from './FeedbackForm';
+import FeedbackForm from './Forms/FeedbackForm';
 
 const Footer = () => {
   const [showFeedback, setShowFeedback] = useState(false);

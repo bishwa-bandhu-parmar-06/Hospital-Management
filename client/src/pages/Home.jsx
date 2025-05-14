@@ -1,12 +1,11 @@
-import React, { useState } from "react";
 
-import HomeDepartments from '../components/HomeDepartments';
+import HomeDepartments from '../components/CardComponents/HomeDepartments';
 import doctorTeam from "../assets/doctorteam.png";
-import DoctorCardHome from "../components/DoctorCardHome";
-import FeedBackHome from "../components/FeedBackHome";
+import DoctorCardHome from "../components/CardComponents/DoctorCardHome";
+import FeedBackHome from "../components/CardComponents/FeedBackHome";
 import HowAuturaWorks from "../components/HowAutraWorks";
-import { departmentsData } from '../data/departmentsData'; 
-import { Link } from 'react-router-dom';
+
+
 const Home = () => {
   return (
     <div className="bg-accentlight">

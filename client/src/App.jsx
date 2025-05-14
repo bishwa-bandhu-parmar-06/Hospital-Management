@@ -49,7 +49,7 @@ import DepartmentDetail from './pages/DepartmentDetail';
 import ServiceDetail from './pages/ServiceDetail';
 import NotFound from './pages/NotFound';
 import AuthPage from './pages/AuthPage';
-
+import DoctorDetail from './pages/DoctorDetail';
 const App = () => {
   return (
     <Router>
@@ -62,6 +62,7 @@ const App = () => {
         <Route path="/services/:serviceName" element={<ServiceDetail />} />
         <Route path="/departments" element={<Departments />} />
         <Route path="/departments/:departmentName" element={<DepartmentDetail />} />
+        <Route path="/doctors/:id" element={<DoctorDetail />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
