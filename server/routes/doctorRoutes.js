@@ -19,7 +19,7 @@ router.put("/update-profile", authenticate, upload.single("profilePhoto"),update
 router.get("/profile", authenticate, getDoctorProfile);
 
 // Route for resending doctor OTP
-router.post("/resend-otp", authenticate, resendDoctorOtp);
+router.post("/resend-otp", resendDoctorOtp);
 
 // Route for doctor logout
 router.post("/logout", authenticate, logoutDoctor);

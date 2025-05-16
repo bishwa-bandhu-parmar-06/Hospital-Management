@@ -19,10 +19,6 @@ module.exports.registerUser = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000);
     const newUser = await userModel.create({ name, email, mobile, otp, isVerified: false });
-
-    // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    //   expiresIn: "24h",
-    // });
     newUser.otp = otp;
     await newUser.save();
     await sendOtpEmail(email, name, otp);

@@ -7,7 +7,7 @@ const { authenticate } = require('../middlewares/authMiddleware');
 const { upload } = require('../config/multer');
 
 router.post('/register', registerHospital);
-router.post('/verify-email-otp', verifyHospitalOtp);
+router.post('/verify-register-email-otp', verifyHospitalOtp);
 router.post('/login', loginHospital);
 router.post('/verify-login-otp', verifyHospitalLoginOtp);
 router.put('/update', authenticate, upload.single('logo'), updateHospitalProfile);

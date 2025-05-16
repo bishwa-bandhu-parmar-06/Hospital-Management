@@ -50,6 +50,66 @@ module.exports.registerHospital = async (req, res) => {
       .json({ message: "Internal server error from hospital registration" });
   }
 };
+
+
+// module.exports.registerHospital = async (req, res) => {
+//   try {
+//     console.log('Registration request body:', req.body); // Log incoming data
+    
+//     const { name, email, mobile, address, website } = req.body;
+    
+//     // Validate required fields
+//     if (!name || !email || !mobile || !address) {
+//       console.log('Missing required fields');
+//       return res.status(400).json({ message: "All fields except website are required" });
+//     }
+
+//     console.log('Checking for existing hospitals...');
+//     const hospitalByEmail = await hospitalModel.findOne({ email });
+//     if (hospitalByEmail) {
+//       console.log('Email already exists:', email);
+//       return res.status(400).json({ message: "Hospital with this email already exists." });
+//     }
+    
+//     const hospitalByMobile = await hospitalModel.findOne({ mobile });
+//     if (hospitalByMobile) {
+//       console.log('Mobile already exists:', mobile);
+//       return res.status(400).json({ message: "Hospital with this phone number already exists." });
+//     }
+
+//     console.log('Generating OTP...');
+//     const otp = Math.floor(100000 + Math.random() * 900000);
+    
+//     console.log('Creating new hospital...');
+//     const newHospital = await hospitalModel.create({
+//       name,
+//       email,
+//       mobile,
+//       address,
+//       website: website || '', // Handle optional website
+//       otp,
+//       isVerified: false,
+//     });
+
+//     console.log('Hospital created, sending OTP...');
+//     await sendEmailOtp(email, name, otp);
+    
+//     console.log('Registration successful for:', email);
+//     return res.status(200).json({ message: "OTP sent to your email" });
+    
+//   } catch (error) {
+//     console.error("Detailed registration error:", {
+//       message: error.message,
+//       stack: error.stack,
+//       name: error.name,
+//       ...error
+//     });
+//     res.status(500).json({ 
+//       message: "Internal server error from hospital registration",
+//       detailedError: error.message // Send error details in development
+//     });
+//   }
+// };
 // Hospital Registration OTP Verification
 module.exports.verifyHospitalOtp = async (req, res) => {
   try {
