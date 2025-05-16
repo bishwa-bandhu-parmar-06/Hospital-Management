@@ -25,7 +25,7 @@ const DepartmentCard = ({ department }) => {
         </p>
         <Link
           to={`/departments/${department.name.toLowerCase().replace(/\s+/g, '-')}`}
-          className="block w-full text-center py-2 px-4 bg-[var(--color-primary)] text-white rounded-md hover:bg-[var(--color-secondary)] transition-colors"
+          className="block w-full text-center py-2 px-4 bg-[var(--color-secondary)] text-white rounded-md hover:bg-[var(--color-primary)] transition-colors"
         >
           View Details
         </Link>

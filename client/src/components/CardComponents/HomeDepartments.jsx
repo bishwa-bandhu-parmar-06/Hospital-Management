@@ -30,7 +30,7 @@ const HomeDepartments = () => {
         <div className="text-center mt-10">
           <Link
             to="/departments"
-            className="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition-colors"
+            className="inline-block px-6 py-3 bg-[var(--color-secondary)] text-white rounded-lg hover:bg-[var(--color-primary)] transition-colors"
           >
             View All Departments
           </Link>
