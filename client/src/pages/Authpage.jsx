@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import authImage from "../assets/FormImage.png";
+import authImage from "../assets/green.png";
 // Patient components
 import PatientRegisterForm from "../components/Forms/Patients/RegisterForm";
 import PatientLoginForm from "../components/Forms/Patients/LoginForm";
@@ -80,7 +80,7 @@ const AuthPage = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error("Patient Not Found");
     } finally {
       setLoading(false);
     }
@@ -172,6 +172,14 @@ const AuthPage = () => {
       toast.success("OTP sent to your email");
     } catch (error) {
       console.error("Doctor registration error:", error);
+      // Check if the error message indicates email already exists
+      if (error.message.includes("Doctor With this Email Already exists")) {
+        toast.error(
+          "This email is already registered. Please use a different email."
+        );
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -187,11 +195,22 @@ const AuthPage = () => {
         toast.success("Registration successful. Please login.");
       } else {
         const response = await verifyLoginDoctorOtp(email, otp);
-        if (response.doctor?.isApproved) {
+        if (response.doctor?.status === "approved") {
           localStorage.setItem("doctorToken", response.token);
           localStorage.setItem("userType", "doctor");
           toast.success("Login successful");
           navigate("/doctor/dashboard");
+        }else if (response.doctor?.status === "rejected") {
+          localStorage.setItem("doctorToken", response.token);
+          localStorage.setItem("userType", "doctor");
+          toast.error("Your account has been rejected");
+          navigate("/rejectionpage", {
+            state: {
+              userType: "doctor",
+              name: response.doctor?.name || "Doctor",
+              email: email,
+            },
+          });
         } else {
           toast.error("Account pending approval");
           navigate("/pending-approval", {
@@ -291,6 +310,8 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
+  // Updated hospital verify OTP handler with better error handling
   const handleHospitalVerifyOtp = async (otp) => {
     setLoading(true);
     try {
@@ -301,7 +322,7 @@ const AuthPage = () => {
         toast.success("Registration successful. Please login.");
       } else {
         const response = await verifyLoginHospitalOtp(email, otp);
-        if (response.hospital?.isApproved) {
+        if (response.hospital?.status === "approved") {
           localStorage.setItem("hospitalToken", response.token);
           localStorage.setItem("userType", "hospital");
           toast.success("Login successful");
@@ -348,6 +369,7 @@ const AuthPage = () => {
       toast.success("OTP sent to your email");
     } catch (error) {
       console.error("Admin login error:", error);
+      toast.error("Admin Not Found");
     } finally {
       setLoading(false);
     }
@@ -407,11 +429,11 @@ const AuthPage = () => {
 
         <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
           {/* Left side - Image */}
-          <div className="hidden lg:block flex-auto max-w-2xl">
+          <div className="hidden lg:block flex-auto max-w-xl">
             <img
               src={authImage}
               alt="Authentication"
-              className="w-full h-auto rounded-lg"
+              className="w-auto h-96 ml-40 object-cover rounded-lg"
             />
           </div>
 

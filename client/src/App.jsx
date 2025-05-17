@@ -20,6 +20,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import RejectedApprovalPage from "./pages/RejectedApprovalpage"
 import PendingApprovalPage from "./pages/PendingApprovalPage";
 // importing the profile or dashboard
 import PatientProfile from "./components/Forms/Patients/PatientProfile";
@@ -62,6 +63,7 @@ const App = () => {
   </PrivateRoute>
 } />
         <Route path="/pending-approval" element={<PendingApprovalPage />} />
+        <Route path="/rejectionpage" element={<RejectedApprovalPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
