@@ -101,23 +101,43 @@ module.exports.verifyAdminLoginEmailotp = async(req, res) =>{
 }
 
 // admin update profile
-module.exports.updateAdminProfile = async(req, res) =>{
+// Update your route to handle single file uploads separately
+
+
+// Updated controller
+module.exports.updateAdminProfile = async(req, res) => {
     try {
         const adminId = req.user.id;
-        const {name, email, mobile} = req.body;
         const admin = await adminModel.findById(adminId);
-        if(!admin){
+        
+        if(!admin) {
             return res.status(400).json({message: "Admin Not Found"});
         }
-        if(email) admin.email = email;
-        if(name) admin.name = name;
-        if(mobile) admin.mobile = mobile;
 
-        if(req.file && req.file.path){
-            admin.profilePhoto = req.file.path;
+        // Handle text fields from form-data
+        if (req.body.name) admin.name = req.body.name;
+        if (req.body.email) admin.email = req.body.email;
+        if (req.body.mobile) admin.mobile = req.body.mobile;
+
+        // Handle profile photo
+        if(req.files?.profilePhoto) {
+            admin.profilePhoto = req.files.profilePhoto[0].path;
         }
+
+        // Handle banner image
+        if(req.files?.bannerImage) {
+            admin.bannerImage = req.files.bannerImage[0].path;
+        }
+
         await admin.save();
-        return res.status(200).json({message: "Profile updated successfully", admin});
+        return res.status(200).json({
+            message: "Profile updated successfully", 
+            admin: {
+                ...admin._doc,
+                profilePhoto: admin.profilePhoto,
+                bannerImage: admin.bannerImage
+            }
+        });
     } catch (error) {
         console.error("Error in updateAdminProfile: ", error);
         return res.status(500).json({message: "Internal Server Error from updateAdminProfile"});
