@@ -54,6 +54,7 @@ const ProfileForm = ({ user, onSubmit, loading }) => {
             Email Address
           </label>
           <input
+            disabled
             type="email"
             id="email"
             name="email"
@@ -77,19 +78,7 @@ const ProfileForm = ({ user, onSubmit, loading }) => {
           />
         </div>
 
-        <div className="mb-6">
-          <label className="block text-[var(--color-text-primary)] mb-2" htmlFor="profilePhoto">
-            Profile Photo
-          </label>
-          <input
-            type="file"
-            id="profilePhoto"
-            name="profilePhoto"
-            onChange={handleChange}
-            className="w-full p-3 border border-[var(--color-accent)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-            accept="image/*"
-          />
-        </div>
+        
 
         <button
           type="submit"

@@ -11,7 +11,7 @@ const Home = () => {
       {/* Hero Section with absolute positioning */}
       <div className="h-[80vh] sm:h-[90vh] w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-center px-4 sm:px-6 md:px-8 relative z-10">
         {/* Left Section: Welcome Text */}
-        <div className="text-black md:ml-12 lg:ml-20 xl:ml-32 w-full md:w-3/4">
+        <div className="text-black md:ml-12 lg:ml-20 xl:ml-32 w-full  h-3/5 md:w-3/4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-tight">
             Welcome to{" "}
             <span className="text-secondary text-5xl sm:text-6xl md:text-7xl">'Aatura'</span>

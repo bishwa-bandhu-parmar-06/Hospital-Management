@@ -198,13 +198,27 @@ module.exports.updateHospitalProfile = async (req, res) => {
     if (address) hospital.address = address;
     if (website) hospital.website = website;
 
-    if (req.file && req.file.path) {
-      hospital.logo = req.file.path;
-    }
+    // if (req.file && req.file.path) {
+    //   hospital.logo = req.file.path;
+    // }
+    // Handle profile photo
+        if(req.files?.logo) {
+            hospital.logo = req.files.logo[0].path;
+        }
+
+        // Handle banner image
+        if(req.files?.bannerImage) {
+            hospital.bannerImage = req.files.bannerImage[0].path;
+        }
+
     await hospital.save();
     return res
       .status(200)
-      .json({ message: "Profile updated successfully", hospital });
+      .json({ message: "Profile updated successfully", hospital:{
+        ...hospital._doc,
+        logo: hospital.logo,
+        bannerImage: hospital.bannerImage
+      } });
   } catch (error) {
     console.error("Error while updating hospital profile", error);
     res
