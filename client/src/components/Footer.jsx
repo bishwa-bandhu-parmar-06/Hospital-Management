@@ -7,13 +7,12 @@ const Footer = () => {
 
   const handleFeedbackSubmit = (data) => {
     console.log('Feedback submitted:', data);
-    // Here you would typically send the data to your backend
     alert('Thank you for your feedback!');
   };
 
   return (
-    <footer className="bg-[var(--color-secondary)] text-white pt-12 pb-6">
-      <div className="container mx-auto px-4">
+    <footer className="bg-[var(--color-secondary)] text-white pt-8 pb-6 md:pt-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {showFeedback && (
           <FeedbackForm 
             onClose={() => setShowFeedback(false)} 
@@ -21,77 +20,101 @@ const Footer = () => {
           />
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Quick Links */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 border-b border-[var(--color-accent)] pb-2">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="/" className="hover:text-[var(--color-accent)] transition-colors">Home</a></li>
-              <li><a href="/about" className="hover:text-[var(--color-accent)] transition-colors">About Us</a></li>
-              <li><a href="/services" className="hover:text-[var(--color-accent)] transition-colors">Services</a></li>
-              <li><a href="#" className="hover:text-[var(--color-accent)] transition-colors">Doctors</a></li>
-              <li><a href="/contact" className="hover:text-[var(--color-accent)] transition-colors">Contact</a></li>
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 border-b border-[var(--color-accent)] pb-2 inline-block sm:block w-full">
+              Quick Links
+            </h3>
+            <ul className="space-y-1 md:space-y-2">
+              {['Home', 'About Us', 'Services', 'Doctors', 'Contact'].map((link) => (
+                <li key={link}>
+                  <a 
+                    href={`/${link.toLowerCase().replace(' ', '-')}`} 
+                    className="hover:text-[var(--color-accent)] transition-colors text-sm md:text-base"
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Departments */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 border-b border-[var(--color-accent)] pb-2">Departments</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[var(--color-accent)] transition-colors">Cardiology</a></li>
-              <li><a href="#" className="hover:text-[var(--color-accent)] transition-colors">Neurology</a></li>
-              <li><a href="#" className="hover:text-[var(--color-accent)] transition-colors">Orthopedics</a></li>
-              <li><a href="#" className="hover:text-[var(--color-accent)] transition-colors">Pediatrics</a></li>
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 border-b border-[var(--color-accent)] pb-2 inline-block sm:block w-full">
+              Departments
+            </h3>
+            <ul className="space-y-1 md:space-y-2">
+              {['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics'].map((dept) => (
+                <li key={dept}>
+                  <a 
+                    href="#" 
+                    className="hover:text-[var(--color-accent)] transition-colors text-sm md:text-base"
+                  >
+                    {dept}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 border-b border-[var(--color-accent)] pb-2">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center">
-                <FaMapMarkerAlt className="mr-2 text-[var(--color-accent)]" />
-                <span>123 Medical St, Health City</span>
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 border-b border-[var(--color-accent)] pb-2 inline-block sm:block w-full">
+              Contact Us
+            </h3>
+            <ul className="space-y-2 md:space-y-3">
+              <li className="flex items-center justify-center sm:justify-start">
+                <FaMapMarkerAlt className="mr-2 text-[var(--color-accent)] text-sm md:text-base" />
+                <span className="text-sm md:text-base">123 Medical St, Health City</span>
               </li>
-              <li className="flex items-center">
-                <FaPhone className="mr-2 text-[var(--color-accent)]" />
-                <span>+1 (555) 123-4567</span>
+              <li className="flex items-center justify-center sm:justify-start">
+                <FaPhone className="mr-2 text-[var(--color-accent)] text-sm md:text-base" />
+                <span className="text-sm md:text-base">+1 (555) 123-4567</span>
               </li>
-              <li className="flex items-center">
-                <FaEnvelope className="mr-2 text-[var(--color-accent)]" />
-                <span>contact@autura.com</span>
+              <li className="flex items-center justify-center sm:justify-start">
+                <FaEnvelope className="mr-2 text-[var(--color-accent)] text-sm md:text-base" />
+                <span className="text-sm md:text-base">contact@autura.com</span>
               </li>
             </ul>
           </div>
 
           {/* Feedback & Social */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 border-b border-[var(--color-accent)] pb-2">Connect With Us</h3>
-            <div className="flex space-x-4 mb-6">
-              <a href="#" className="text-2xl hover:text-[var(--color-accent)] transition-colors">
-                <FaFacebook />
-              </a>
-              <a href="#" className="text-2xl hover:text-[var(--color-accent)] transition-colors">
-                <FaTwitter />
-              </a>
-              <a href="#" className="text-2xl hover:text-[var(--color-accent)] transition-colors">
-                <FaLinkedin />
-              </a>
-              <a href="#" className="text-2xl hover:text-[var(--color-accent)] transition-colors">
-                <FaInstagram />
-              </a>
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 border-b border-[var(--color-accent)] pb-2 inline-block sm:block w-full">
+              Connect With Us
+            </h3>
+            <div className="flex justify-center sm:justify-start space-x-4 mb-4 md:mb-6">
+              {[
+                { icon: <FaFacebook />, name: 'Facebook' },
+                { icon: <FaTwitter />, name: 'Twitter' },
+                { icon: <FaLinkedin />, name: 'LinkedIn' },
+                { icon: <FaInstagram />, name: 'Instagram' }
+              ].map((social) => (
+                <a 
+                  key={social.name}
+                  href="#" 
+                  className="text-xl md:text-2xl hover:text-[var(--color-accent)] transition-colors"
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
-            <button
-              onClick={() => setShowFeedback(true)}
-              className="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white py-2 px-4 rounded transition-colors duration-300"
-            >
-              Give Feedback
-            </button>
+            <div className="flex justify-center sm:justify-start">
+              <button
+                onClick={() => setShowFeedback(true)}
+                className="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white py-2 px-4 rounded transition-colors duration-300 text-sm md:text-base"
+              >
+                Give Feedback
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-[var(--color-accent)] pt-6 text-center">
-          <p className="text-sm">
+        <div className="border-t border-[var(--color-accent)] pt-4 md:pt-6 text-center">
+          <p className="text-xs md:text-sm">
             &copy; {new Date().getFullYear()} Autura Medical. All rights reserved. | 
             Designed by <span className="text-[var(--color-accent)]">Bishwa Bandhu Parmar</span>
           </p>

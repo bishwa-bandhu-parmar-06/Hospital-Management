@@ -123,30 +123,7 @@ const handleFileChange = async (e, type) => {
     toast.error(err.response?.data?.message || "Failed to update image");
   }
 };
-const handleTextUpdate = async (formData) => {
-  try {
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${backendUrl}/admin/update-profile`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData),
-    });
 
-    const data = await response.json();
-    if (response.ok) {
-      setAdmin(data.admin);
-      toast.success("Profile updated successfully");
-    } else {
-      toast.error(data.message || "Error updating profile");
-    }
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    toast.error("Something went wrong. Please try again.");
-  }
-};
   // Function to handle form updation
   const handleAdminUpdationForm = async (formData) => {
     try {
@@ -243,7 +220,7 @@ const handleTextUpdate = async (formData) => {
         <img
           src={bannerPreview}
           alt="Banner"
-          className="w-full h-48 md:h-56 object-cover"
+          className="w-full h-64 md:h-56 object-cover"
         />
         <button
           onClick={() => bannerInputRef.current.click()}

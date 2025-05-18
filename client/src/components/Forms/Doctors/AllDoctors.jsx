@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../../Loader';
+import { useNavigate } from 'react-router-dom';
 const AllDoctors = ({onClose}) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchAllDoctors = async () => {
       try {
@@ -37,6 +38,9 @@ const AllDoctors = ({onClose}) => {
     fetchAllDoctors();
   }, [backendUrl]);
 
+  const handleDoctorClick = (id) => {
+    navigate(`/doctors/${id}`);
+  };
   return (
     <div className="min-h-screen bg-accentlight p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Approved Doctors</h1>
@@ -51,6 +55,7 @@ const AllDoctors = ({onClose}) => {
           {doctors.map((doctor) => (
             <div
               key={doctor._id}
+              onClick={()=>handleDoctorClick(doctor._id)} 
               className="bg-white rounded-xl shadow-md p-6 border border-gray-200"
             >
               <h2 className="text-xl font-semibold mb-2">{doctor.name}</h2>

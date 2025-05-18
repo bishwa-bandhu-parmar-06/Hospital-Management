@@ -8,6 +8,7 @@ router.get("/all-users", getAllUsers);
 router.get("/all-admins", getAllAdmin);
 // Route to get all doctors
 router.get("/all-doctors", getAllDoctor);
+router.get("/all-doctors/:id", getAllDoctor);
 // Route to get all hospitals
 router.get("/all-hospitals", getAllHospitals);
 // Exporting the router
