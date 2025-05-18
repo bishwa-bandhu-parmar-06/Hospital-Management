@@ -28,19 +28,7 @@ const DoctorProfileForm = ({ doctor, onSubmit }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          profilePhoto: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,21 +41,7 @@ const DoctorProfileForm = ({ doctor, onSubmit }) => {
         Update Profile
       </Typography>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Avatar 
-              src={formData.profilePhoto} 
-              sx={{ width: 120, height: 120 }} 
-            />
-          </Box>
-          <Button 
-            variant="outlined" 
-            component="label"
-            sx={{ width: 'fit-content', mx: 'auto' }}
-          >
-            Upload Photo
-            <input type="file" hidden onChange={handleFileChange} />
-          </Button>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}> 
           <TextField
             label="Full Name"
             name="name"
@@ -76,6 +50,7 @@ const DoctorProfileForm = ({ doctor, onSubmit }) => {
             fullWidth
           />
           <TextField
+            disabled
             label="Email"
             name="email"
             type="email"

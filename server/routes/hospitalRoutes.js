@@ -10,7 +10,15 @@ router.post('/register', registerHospital);
 router.post('/verify-register-email-otp', verifyHospitalOtp);
 router.post('/login', loginHospital);
 router.post('/verify-login-otp', verifyHospitalLoginOtp);
-router.put('/update', authenticate, upload.single('logo'), updateHospitalProfile);
+// router.put('/update', authenticate, upload.single('logo'), updateHospitalProfile);
+router.put('/update', 
+  authenticate, 
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'bannerImage', maxCount: 1 }
+  ]), 
+  updateHospitalProfile
+);
 router.get('/profile', authenticate, getHospitalProfile);
 router.post('/resend-otp', resendHospitalOtp);
 router.post('/logout', authenticate, logoutHospital);

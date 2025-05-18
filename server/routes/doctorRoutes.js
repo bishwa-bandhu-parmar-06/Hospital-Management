@@ -14,7 +14,16 @@ router.post("/login", loginDoctor);
 // Route for verifying doctor login OTP
 router.post("/verify-login-otp", verifyLoginOtp);
 // Route for updating doctor profile
-router.put("/update-profile", authenticate, upload.single("profilePhoto"),updateDoctorProfile);
+// router.put("/update-profile", authenticate, upload.single("profilePhoto"),updateDoctorProfile);
+
+router.put('/update-profile', 
+  authenticate, 
+  upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'bannerImage', maxCount: 1 }
+  ]), 
+  updateDoctorProfile
+);
 // Route for getting doctor profile
 router.get("/profile", authenticate, getDoctorProfile);
 

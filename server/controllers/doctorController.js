@@ -130,7 +130,7 @@ module.exports.updateDoctorProfile = async(req, res) =>{
   try {
     const doctorId = req.user.id;
     const { name, email, mobile } = req.body;
-    const doctor = await doctorModel.findById(doctorId).select("-otp -isverified -createdAt -updatedAt -__v");
+    const doctor = await doctorModel.findById(doctorId);
     if(!doctor){
       return res.status(400).json({message: "Doctor Not Found"});
     }
@@ -138,11 +138,22 @@ module.exports.updateDoctorProfile = async(req, res) =>{
     if(email) doctor.email = email;
     if(mobile) doctor.mobile = mobile;
 
-    if(req.file && req.file.path){
-      doctor.profilePhoto = req.file.path;
-    }
+    // Handle profile photo
+        if(req.files?.profilePhoto) {
+            doctor.profilePhoto = req.files.profilePhoto[0].path;
+        }
+
+        // Handle banner image
+        if(req.files?.bannerImage) {
+            doctor.bannerImage = req.files.bannerImage[0].path;
+        }
     await doctor.save();
-    return res.status(200).json({message: "Doctor Profile Updated Successfully", doctor});
+    return res.status(200).json({message: "Doctor Profile Updated Successfully", doctor: {
+                ...doctor._doc,
+                profilePhoto: doctor.profilePhoto,
+                bannerImage: doctor.bannerImage
+            }
+    });
 
   } catch (error) {
     console.error("Error While Updating Doctor Profile", error);

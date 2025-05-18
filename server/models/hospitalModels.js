@@ -28,6 +28,9 @@ const hospitalSchema = new mongoose.Schema({
     logo: {
         type: String,
     },
+    bannerImage: {
+        type: String,
+    },
     isVerified: {
         type: Boolean,
         default: false,

@@ -22,6 +22,9 @@ const doctorSchema = new mongoose.Schema({
     profilePhoto: {
         type: String
     },
+    bannerImage:{
+        type: String
+    },
     isVerified: {
         type: Boolean,
         default: false

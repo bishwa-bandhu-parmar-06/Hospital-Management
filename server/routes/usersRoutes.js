@@ -10,8 +10,15 @@ router.post("/verify-register-otp", verifyRegisterEmailOtp);
 router.post("/login", loginUser);
 router.post("/verify-login-otp", verifyLoginEmailOtp);
 router.get("/profile",authenticate, usersProfile);
-router.put("/update", authenticate, upload.single("profilePhoto"), updateUserDetails);
-
+// router.put("/update", authenticate, upload.single("profilePhoto"), updateUserDetails);
+router.put('/update', 
+  authenticate, 
+  upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'bannerImage', maxCount: 1 }
+  ]), 
+  updateUserDetails
+);
 router.post("/resend-otp", authenticate, resendUserOtp);
 
 router.post("/logout", authenticate, logoutUser);
