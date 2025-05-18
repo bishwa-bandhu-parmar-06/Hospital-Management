@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../../Loader';
 import { useNavigate } from 'react-router-dom';
-const AllDoctors = ({onClose}) => {
+const AllDoctors = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +43,7 @@ const AllDoctors = ({onClose}) => {
   };
   return (
     <div className="min-h-screen bg-accentlight p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Approved Doctors</h1>
+      <h1 className="text-3xl font-bold mb-6  text-secondary text-center"> Doctors</h1>
 
       {loading ? (
         <Loader />
@@ -61,7 +61,7 @@ const AllDoctors = ({onClose}) => {
               <h2 className="text-xl font-semibold mb-2">{doctor.name}</h2>
               <p className="text-gray-600 mb-1">Email: {doctor.email}</p>
               <p className="text-gray-600 mb-1">Mobile: {doctor.mobile}</p>
-              <p className="text-gray-600">Role: {doctor.role}</p>
+              {/* <p className="text-gray-600">Role: {doctor.role}</p> */}
             </div>
           ))}
         </div>

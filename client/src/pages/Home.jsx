@@ -4,7 +4,7 @@ import doctorTeam from "../assets/doctorteam.png";
 import DoctorCardHome from "../components/CardComponents/DoctorCardHome";
 import FeedBackHome from "../components/CardComponents/FeedBackHome";
 import HowAuturaWorks from "../components/HowAutraWorks";
-
+import HospitalPartner from "../components/CardComponents/PartnerHomePage"
 const Home = () => {
   return (
     <div className="bg-accentlight relative">
@@ -44,13 +44,17 @@ const Home = () => {
       </div>
 
       {/* Departments Section with negative margin */}
-      <div className="relative z-20 -mt-16 md:-mt-24">
+      <div className="relative z-20 -mt-16 md:-mt-20">
         <HomeDepartments />
       </div>
 
       {/* Other Sections */}
       <DoctorCardHome />
       <FeedBackHome />
+      
+      
+      <HospitalPartner />
+      {/* How Aatura Works Section */}
       <HowAuturaWorks />
     </div>
   );

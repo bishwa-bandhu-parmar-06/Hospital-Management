@@ -143,7 +143,7 @@ const About = () => {
             <button className="bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">
               Book an Appointment
             </button>
-            <button className="border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">
+            <button onClick={() => window.location.href = "/contact"} className="border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">
               Contact Us
             </button>
           </div>

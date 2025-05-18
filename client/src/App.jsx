@@ -12,7 +12,7 @@ import DepartmentDetail from "./pages/DepartmentDetail";
 import ServiceDetail from "./pages/ServiceDetail";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/Authpage";
-import DoctorDetail from "./pages/DoctorDetail";
+import DoctorDetail from "./components/Forms/Doctors/DoctorDetail";
 import HospitalDetails from "./components/Forms/Hospitals/HospitalDetails";
 import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
@@ -25,6 +25,7 @@ import PatientProfile from "./components/Forms/Patients/PatientProfile";
 import DoctorProfile from "./components/Forms/Doctors/DoctorsProfile";
 import AdminProfile from "./components/Forms/Admin/AdminProfile";
 import HospitalProfile from "./components/Forms/Hospitals/HospitalProfile";
+import AllHospitals from "./components/Forms/Hospitals/AllHospitals";
 const App = () => {
   return (
     <Router>
@@ -78,7 +79,8 @@ const App = () => {
         />
         <Route path="/pending-approval" element={<PendingApprovalPage />} />
         <Route path="/rejectionpage" element={<RejectedApprovalPage />} />
-        <Route path="/hospital/profile/:hospitalId" element={<HospitalDetails />} />
+        <Route path="/hospital/:hospitalId" element={<HospitalDetails />} />
+        <Route path="/hospitals" element={<AllHospitals />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
