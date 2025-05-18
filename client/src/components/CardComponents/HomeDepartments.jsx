@@ -8,7 +8,7 @@ const HomeDepartments = () => {
   const featuredDepartments = departmentsData.slice(0, 5);
 
   return (
-    <section className="w-full pt-24 md:pt-32 pb-8 md:pb-12 bg-accentlight">
+    <section className="w-full md:pt-32 pb-8 md:pb-12 bg-accentlight">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-secondary mb-3 md:mb-4">

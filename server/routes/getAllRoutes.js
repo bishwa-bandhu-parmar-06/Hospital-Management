@@ -11,5 +11,6 @@ router.get("/all-doctors", getAllDoctor);
 router.get("/all-doctors/:id", getAllDoctor);
 // Route to get all hospitals
 router.get("/all-hospitals", getAllHospitals);
+router.get("/all-hospitals/:id", getAllHospitals);
 // Exporting the router
 module.exports = router;

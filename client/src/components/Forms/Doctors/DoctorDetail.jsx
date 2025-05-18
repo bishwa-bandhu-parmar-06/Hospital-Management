@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Loader from "../components/Loader"
+import Loader from "../../Loader"
 const DoctorDetail = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
   const [doctor, setDoctor] = useState(null);
@@ -66,23 +66,31 @@ const DoctorDetail = () => {
   };
 
   return (
-    <div className="bg-background py-12">
+    <div className="bg-accentlight py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="md:flex">
             {/* Doctor Image */}
             <div className="md:w-1/3 p-8 flex flex-col items-center">
-              <div className="w-48 h-48 rounded-full border-4 border-accent overflow-hidden mb-6">
-                <img 
-                  src={doctor.profilePhoto || '/default-doctor.jpg'} 
-                  alt={doctor.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null; 
-                    e.target.src = '/default-doctor.jpg';
-                  }}
-                />
-              </div>
+              <div className="relative h-48  flex items-center justify-center">
+                    {doctor.profilePhoto ? (
+                      <img
+                        src={doctor.profilePhoto}
+                        alt={doctor.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center">
+                        <span className="text-5xl font-bold text-white">
+                          {doctor.name?.charAt(0).toUpperCase() || "D"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
               <h1 className="text-2xl font-bold text-secondary mb-2">{doctor.name}</h1>
               <p className="text-primary font-medium mb-4">{doctor.specialization || 'General Practitioner'}</p>
               

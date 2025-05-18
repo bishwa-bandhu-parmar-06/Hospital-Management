@@ -19,7 +19,7 @@ const AllHospitals = () => {
           },
         });
         const data = await response.json();
-        
+        // console.log("Fetched hospitals data:", data);
         if (response.ok) {
           // Filter to only show approved hospitals
           const approvedHospitals = Array.isArray(data.hospital) 
@@ -42,7 +42,7 @@ const AllHospitals = () => {
   }, [backendUrl]);
 
   const handleHospitalClick = (hospitalId) => {
-    navigate(`/hospital/profile/${hospitalId}`);
+    navigate(`/hospital/${hospitalId}`);
   };
 
   if (loading) {
