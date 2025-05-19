@@ -5,11 +5,14 @@ import EditProfileModal from "./ProfileUpdateForm";
 import { toast } from "react-toastify";
 import { FaPencilAlt } from "react-icons/fa";
 import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
+import AllPatientAppointment from "./AllPatientAppointment";
 
 const PatientProfile = () => {
-  const backendUrl =
-    import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl =import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
 
+
+ const [activeComponent, setActiveComponent] = useState("Appliedappointments");
   const [patient, setPatient] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [profilePreview, setProfilePreview] = useState(defaultprofile);
@@ -17,6 +20,11 @@ const PatientProfile = () => {
     "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
   );
 
+  // function to handle component change
+  const handleComponentChange = (component) => {
+    setActiveComponent(component);
+  };
+  const navigate = useNavigate();
   const profileInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
@@ -163,6 +171,11 @@ const PatientProfile = () => {
     }
   };
 
+  // Redirect to bookAppointment if activeComponent is "bookAppointment"
+  if (activeComponent === "bookAppointment") {
+    return <Navigate to="/book-appointment" />;
+  }
+
   if (!patient) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -267,7 +280,22 @@ const PatientProfile = () => {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 md:gap-4">
           <button
-            onClick={() => setShowEditForm(true)}
+            onClick={() => handleComponentChange("bookAppointment")}
+            className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
+          >
+            Book Appoinment
+          </button>
+          <button
+            onClick={() => handleComponentChange("Appliedappointments")}
+            className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
+          >
+            Applied Appointment
+          </button>
+          <button
+            onClick={() => {
+              setShowEditForm(true);
+              handleComponentChange("editForm");
+            }}
             className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
           >
             Edit Profile
@@ -287,6 +315,9 @@ const PatientProfile = () => {
         </div>
       </div>
 
+      {activeComponent === "Appliedappointments" && (
+        <AllPatientAppointment patient={patient} onClose={() => setActiveComponent("")} />
+      )}
       {/* Edit Profile Modal */}
       {showEditForm && (
         <EditProfileModal

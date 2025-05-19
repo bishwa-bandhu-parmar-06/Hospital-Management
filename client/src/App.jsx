@@ -26,6 +26,9 @@ import DoctorProfile from "./components/Forms/Doctors/DoctorsProfile";
 import AdminProfile from "./components/Forms/Admin/AdminProfile";
 import HospitalProfile from "./components/Forms/Hospitals/HospitalProfile";
 import AllHospitals from "./components/Forms/Hospitals/AllHospitals";
+
+// import AllPatientAppointment from "./components/Forms/Patients/AllPatientAppointment";
+import BookAppointmentForm from "./components/Forms/Common/bookAppointmentForm";
 const App = () => {
   return (
     <Router>
@@ -81,6 +84,7 @@ const App = () => {
         <Route path="/rejectionpage" element={<RejectedApprovalPage />} />
         <Route path="/hospital/:hospitalId" element={<HospitalDetails />} />
         <Route path="/hospitals" element={<AllHospitals />} />
+        <Route path="/book-appointment" element={<BookAppointmentForm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />

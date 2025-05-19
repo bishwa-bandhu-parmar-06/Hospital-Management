@@ -1,3 +1,4 @@
+
 const doctorModel = require("../models/doctorModels");
 const jwt = require("jsonwebtoken");
 const { sendOtpEmail } = require('../utils/sendigEmailOtpServices');
