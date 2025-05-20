@@ -166,7 +166,7 @@ module.exports.verifyHospitalLoginOtp = async (req, res) => {
     if (hospital.otp !== otp) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
-    const token = jwt.sign({ id: hospital._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: hospital._id,role: hospital.role }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
     hospital.otp = null;

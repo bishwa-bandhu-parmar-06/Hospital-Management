@@ -18,7 +18,7 @@ export const AppointmentProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
 
-  const fetchAppointments = useCallback(async (type) => {
+  const fetchAppointments = useCallback(async (type, status = null) => {
     try {
       setLoading(true);
       setError(null);
@@ -29,13 +29,37 @@ export const AppointmentProvider = ({ children }) => {
       if (!token) {
         throw new Error('No authentication token found');
       }
+  
+      let url;
+      if (type === 'doctor') {
+        url = `${backendUrl}/appointment/doctors/appointments`;
+      } else if (type === 'patient') {
+        url = `${backendUrl}/appointment/patient`;
+      } else {
+        url = `${backendUrl}/appointment/${type}/appointments`;
+      }
+      
+      if (status) {
+        url += `?status=${status}`;
+      }
 
-      const response = await axios.get(`${backendUrl}/appointment/${type}`, {
+      // console.log('Fetching appointments from:', url);
+      // console.log('With token:', token.substring(0, 10) + '...');
+  
+      const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      setAppointments(response.data.appointments);
+  
+      // console.log('Appointments response:', response.data);
+      
+      if (response.data.appointments) {
+        setAppointments(response.data.appointments);
+      } else {
+        console.error('Invalid response format:', response.data);
+        setError('Invalid response format from server');
+      }
     } catch (err) {
+      console.error('Error fetching appointments:', err);
       setError(err.response?.data?.message || 'Failed to fetch appointments');
       toast.error(err.response?.data?.message || 'Failed to fetch appointments');
     } finally {

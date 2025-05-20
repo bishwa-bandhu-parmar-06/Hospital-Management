@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppointment } from '../../../context/AppointmentContext';
 import Loader from '../../Loader';
+import { toast } from 'react-toastify';
 
 const AllPatientAppointment = () => {
     const { appointments, loading, error, fetchAppointments } = useAppointment();
@@ -8,16 +9,26 @@ const AllPatientAppointment = () => {
 
     useEffect(() => {
         const loadAppointments = async () => {
-            if (isInitialLoad) {
+            try {
+                console.log('Loading patient appointments...');
                 await fetchAppointments('patient');
+                console.log('Appointments loaded:', appointments);
+            } catch (err) {
+                console.error('Error loading appointments:', err);
+                toast.error('Failed to load appointments');
+            } finally {
                 setIsInitialLoad(false);
             }
         };
         loadAppointments();
-    }, [fetchAppointments, isInitialLoad]);
+    }, [fetchAppointments]);
+
+    useEffect(() => {
+        console.log('Appointments updated:', appointments);
+    }, [appointments]);
 
     const getStatusBadgeClass = (status) => {
-        switch (status) {
+        switch (status?.toLowerCase()) {
             case 'pending':
                 return 'bg-yellow-100 text-yellow-800';
             case 'confirmed':
@@ -37,7 +48,7 @@ const AllPatientAppointment = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6">My Appointments</h1>
-            {appointments.length === 0 ? (
+            {!appointments || appointments.length === 0 ? (
                 <p className="text-gray-500">No appointments found.</p>
             ) : (
                 <div className="grid gap-6">
@@ -49,14 +60,14 @@ const AllPatientAppointment = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h2 className="text-xl font-semibold">
-                                        Dr. {appointment.doctor.name}
+                                        Dr. {appointment.doctor?.name || 'Unknown Doctor'}
                                     </h2>
                                     <p className="text-gray-600">
                                         {appointment.hospital?.name || 'Online Consultation'}
                                     </p>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeClass(appointment.status)}`}>
-                                    {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                                    {appointment.status?.charAt(0).toUpperCase() + appointment.status?.slice(1)}
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -78,7 +89,7 @@ const AllPatientAppointment = () => {
                                 </div>
                                 <div>
                                     <p className="text-gray-600">Specialization</p>
-                                    <p className="font-medium">{appointment.doctor.specialization}</p>
+                                    <p className="font-medium">{appointment.doctor?.specialization || 'Not specified'}</p>
                                 </div>
                             </div>
                             {appointment.notes && (
