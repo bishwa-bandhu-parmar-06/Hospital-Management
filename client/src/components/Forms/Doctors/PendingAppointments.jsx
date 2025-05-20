@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppointment } from '../../../context/AppointmentContext';
+import { toast } from 'react-toastify';
 import Loader from '../../Loader';
 
 const PendingAppointments = () => {
@@ -11,24 +12,36 @@ const PendingAppointments = () => {
         confirmAppointment,
         cancelAppointment
     } = useAppointment();
+    const [pendingCount, setPendingCount] = useState(0);
 
     useEffect(() => {
         fetchAppointments('doctor', 'pending');
     }, [fetchAppointments]);
 
+    useEffect(() => {
+        setPendingCount(appointments.length);
+    }, [appointments]);
+
     const handleConfirm = async (appointmentId) => {
         try {
             await confirmAppointment(appointmentId);
+            toast.success('Appointment confirmed successfully');
+            fetchAppointments('doctor', 'pending'); // Refresh the list
         } catch (error) {
-            console.error('Error confirming appointment:', error);
+            toast.error(error.response?.data?.message || 'Failed to confirm appointment');
         }
     };
 
     const handleCancel = async (appointmentId) => {
+        const reason = window.prompt('Please provide a reason for cancellation:');
+        if (reason === null) return; // User cancelled the prompt
+        
         try {
-            await cancelAppointment(appointmentId);
+            await cancelAppointment(appointmentId, reason);
+            toast.success('Appointment cancelled successfully');
+            fetchAppointments('doctor', 'pending'); // Refresh the list
         } catch (error) {
-            console.error('Error canceling appointment:', error);
+            toast.error(error.response?.data?.message || 'Failed to cancel appointment');
         }
     };
 
@@ -37,7 +50,14 @@ const PendingAppointments = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">Pending Appointments</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">Pending Appointments</h1>
+                {pendingCount > 0 && (
+                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {pendingCount} Pending
+                    </span>
+                )}
+            </div>
             {appointments.length === 0 ? (
                 <p className="text-gray-500">No pending appointments found.</p>
             ) : (
@@ -85,14 +105,12 @@ const PendingAppointments = () => {
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-gray-600">Type</p>
-                                    <p className="font-medium capitalize">
-                                        {appointment.type}
-                                    </p>
-                                </div>
-                                <div>
                                     <p className="text-gray-600">Symptoms</p>
                                     <p className="font-medium">{appointment.symptoms}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-600">Contact</p>
+                                    <p className="font-medium">{appointment.patient.mobile || appointment.patient.email}</p>
                                 </div>
                             </div>
                             {appointment.notes && (

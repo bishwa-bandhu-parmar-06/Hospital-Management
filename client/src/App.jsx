@@ -35,7 +35,7 @@ import PatientDashboard from './components/Forms/Patients/PatientProfile';
 import DoctorDashboard from './components/Forms/Doctors/DoctorsProfile';
 import HospitalDashboard from './components/Forms/Hospitals/HospitalProfile';
 import AdminDashboard from './components/Forms/Admin/AdminProfile';
-import AllPatientAppointment from './components/Forms/Patient/AllPatientAppointment';
+import AllPatientAppointment from './components/Forms/Patients/AllPatientAppointment';
 import PendingAppointments from './components/Forms/Doctors/PendingAppointments';
 import MyAppointments from './components/Forms/Doctors/MyAppointments';
 import PendingHospitalsAppoinments from './components/Forms/Hospitals/PendingHospitalsAppoinments';
@@ -43,8 +43,8 @@ import HospitalsAppointment from './components/Forms/Hospitals/HospitalsAppointm
 
 const App = () => {
   return (
-    <AppointmentProvider>
-      <Router>
+    <Router>
+      <AppointmentProvider>
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <ToastContainer />
@@ -150,8 +150,8 @@ const App = () => {
           </Routes>
         </div>
         <Footer />
-      </Router>
-    </AppointmentProvider>
+      </AppointmentProvider>
+    </Router>
   );
 };
 
