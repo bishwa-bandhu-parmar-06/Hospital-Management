@@ -11,7 +11,7 @@ const {
 const { authenticate } = require("../middlewares/authMiddleware");
 
 // Book a new appointment
-router.post("/bookAppointment", authenticate, bookAppointment);
+router.post("/", authenticate, bookAppointment);
 
 // Confirm an appointment (by doctor/hospital)
 router.put("/:appointmentId/confirm", authenticate, confirmAppointment);

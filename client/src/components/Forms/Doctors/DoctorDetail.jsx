@@ -2,55 +2,116 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Loader from "../../Loader"
+import Loader from "../../Loader";
+import { jwtDecode } from 'jwt-decode'; // Corrected import
+
 const DoctorDetail = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchDoctor = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/getAll/all-doctors/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      // console.log("API Response:", data); // Debugging log
-      
-      if (response.ok) {
-        // Check if data contains a doctor array with at least one doctor
-        if (data.doctor && data.doctor.length > 0) {
-          const doctorData = data.doctor[0]; // Get the first doctor in the array
-          if (doctorData.status === "approved") {
-            setDoctor(doctorData);
+    // Get user role from token if exists
+    let tokenToDecode;
+    const patientToken = localStorage.getItem('patientToken');
+    const doctorToken = localStorage.getItem('doctorToken');
+    const hospitalToken = localStorage.getItem('hospitalToken');
+    const adminToken = localStorage.getItem('adminToken');
+
+    if (patientToken) tokenToDecode = patientToken;
+    else if (doctorToken) tokenToDecode = doctorToken;
+    else if (hospitalToken) tokenToDecode = hospitalToken;
+    else if (adminToken) tokenToDecode = adminToken;
+    console.log("Token to decode:", tokenToDecode);
+    // Decode the token to get user role
+    if (tokenToDecode) {
+
+      try {
+        const decoded = jwtDecode(tokenToDecode);
+        console.log("Decoded token:", decoded);
+        setUserRole(decoded.role);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        // Optionally: toast.error("Session error. Please log in again.");
+      }
+    }
+
+    const fetchDoctor = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/getAll/all-doctors/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          if (data.doctor && data.doctor.length > 0) {
+            const doctorData = data.doctor[0];
+            if (doctorData.status === "approved") {
+              setDoctor(doctorData);
+            } else {
+              toast.error("Doctor not approved");
+              navigate('/doctors');
+            }
           } else {
-            toast.error("Doctor not approved");
+            toast.error("Doctor not found");
             navigate('/doctors');
           }
         } else {
-          toast.error("Doctor not found");
+          toast.error(data.message || "Failed to fetch doctor");
           navigate('/doctors');
         }
-      } else {
-        toast.error(data.message || "Failed to fetch doctor");
+      } catch (error) {
+        toast.error("Network error. Please try again.");
+        console.error("Fetch doctor error:", error);
         navigate('/doctors');
+      } finally {
+        setLoading(false);
       }
+    };
+
+    fetchDoctor();
+  }, [backendUrl, id, navigate]);
+
+  const handleBookAppointment = () => {
+    // First check for any valid token
+    const token = localStorage.getItem('patientToken');
+
+    if (!token) {
+      toast.error("Please login as a patient to book an appointment");
+      navigate('/auth', { replace: true });
+      return;
+    }
+
+    // Immediately decode to check role
+    try {
+      const decoded = jwtDecode(token);
+      console.log("Decoded token in click handler:", decoded);
+      
+      if (decoded.role !== 'patient') {
+        toast.error("Only patients can book appointments");
+        return;
+      }
+
+      // If we get here, proceed to booking
+      navigate('/book-appointment', { 
+        state: { 
+          doctorId: id, 
+          doctorName: doctor.name 
+        },
+        replace: true 
+      });
     } catch (error) {
-      toast.error("Network error. Please try again.");
-      console.error("Fetch doctor error:", error);
-      navigate('/doctors');
-    } finally {
-      setLoading(false);
+      console.error("Token decode error:", error);
+      toast.error("Session error. Please login again");
+      navigate('/auth', { replace: true });
     }
   };
-
-  fetchDoctor();
-}, [backendUrl, id, navigate]);
 
   if (loading) {
     return <div className="text-center py-12"><Loader /></div>;
@@ -59,12 +120,6 @@ const DoctorDetail = () => {
   if (!doctor) {
     return <div className="text-center py-12">Doctor not found</div>;
   }
-
-  const handleBookAppointment = () => {
-    // Logic to handle appointment booking
-    alert(`Booking appointment with ${doctor.name}`);
-  };
-
   return (
     <div className="bg-accentlight py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,25 +127,25 @@ const DoctorDetail = () => {
           <div className="md:flex">
             {/* Doctor Image */}
             <div className="md:w-1/3 p-8 flex flex-col items-center">
-              <div className="relative h-48  flex items-center justify-center">
-                    {doctor.profilePhoto ? (
-                      <img
-                        src={doctor.profilePhoto}
-                        alt={doctor.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-5xl font-bold text-white">
-                          {doctor.name?.charAt(0).toUpperCase() || "D"}
-                        </span>
-                      </div>
-                    )}
+              <div className="relative h-48 flex items-center justify-center">
+                {doctor.profilePhoto ? (
+                  <img
+                    src={doctor.profilePhoto}
+                    alt={doctor.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = ""; // Consider a default placeholder image if available
+                    }}
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center">
+                    <span className="text-5xl font-bold text-white">
+                      {doctor.name?.charAt(0).toUpperCase() || "D"}
+                    </span>
                   </div>
+                )}
+              </div>
               <h1 className="text-2xl font-bold text-secondary mb-2">{doctor.name}</h1>
               <p className="text-primary font-medium mb-4">{doctor.specialization || 'General Practitioner'}</p>
               

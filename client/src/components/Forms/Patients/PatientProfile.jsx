@@ -123,8 +123,8 @@ const PatientProfile = () => {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem("userToken");
-      const response = await fetch(`${backendUrl}/user/logout`, {
+      const token = localStorage.getItem("patientToken");
+      const response = await fetch(`${backendUrl}/users/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +133,7 @@ const PatientProfile = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.removeItem("userToken");
+        localStorage.removeItem("patientToken");
         setPatient(null);
         toast.success("Logout successful");
         window.location.href = "/auth";
@@ -147,8 +147,8 @@ const PatientProfile = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      const token = localStorage.getItem("userToken");
-      const response = await fetch(`${backendUrl}/user/delete-user`, {
+      const token = localStorage.getItem("patientToken");
+      const response = await fetch(`${backendUrl}/users/delete-user`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -157,7 +157,7 @@ const PatientProfile = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.removeItem("userToken");
+        localStorage.removeItem("patientToken");
         setPatient(null);
         toast.success("Account Deleted Successfully");
         window.location.href = "/auth";
@@ -173,7 +173,7 @@ const PatientProfile = () => {
 
   // Redirect to bookAppointment if activeComponent is "bookAppointment"
   if (activeComponent === "bookAppointment") {
-    return <Navigate to="/book-appointment" />;
+    return <Navigate to="/doctors" />;
   }
 
   if (!patient) {

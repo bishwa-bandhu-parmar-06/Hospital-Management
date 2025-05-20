@@ -12,12 +12,18 @@ const razorpay = new Razorpay({
 });
 
 // Book appointment
+// Book appointment
 module.exports.bookAppointment = async (req, res) => {
     try {
-        const { doctorId, hospitalId, date, startTime, endTime, type, symptoms } = req.body;
+        const { doctorId, hospitalId, date, startTime, endTime, type, symptoms, notes } = req.body;
         const patientId = req.user.id;
 
-        // Check if doctor/hospital is available
+        // Validate that either doctor or hospital is selected
+        if (!doctorId && !hospitalId) {
+            return res.status(400).json({ message: "Either doctor or hospital must be selected" });
+        }
+
+        // Check availability
         const isAvailable = await checkAvailability(doctorId, hospitalId, date, startTime, endTime, type);
         if (!isAvailable) {
             return res.status(400).json({ message: "The selected slot is not available" });
@@ -33,29 +39,11 @@ module.exports.bookAppointment = async (req, res) => {
             endTime,
             type,
             symptoms,
+            notes,
             createdBy: patientId
         });
 
         await newAppointment.save();
-
-        // Create payment order if required
-        if (type === 'online') {
-            const order = await razorpay.orders.create({
-                amount: 500 * 100, // 500 INR in paise
-                currency: "INR",
-                receipt: `appointment_${newAppointment._id}`,
-                payment_capture: 1
-            });
-
-            newAppointment.payment.razorpayOrderId = order.id;
-            await newAppointment.save();
-
-            return res.status(200).json({
-                message: "Appointment created. Please complete payment.",
-                appointment: newAppointment,
-                paymentOrder: order
-            });
-        }
 
         // Notify doctor/hospital
         await sendAppointmentNotification(newAppointment);
@@ -85,16 +73,19 @@ const checkAvailability = async (doctorId, hospitalId, date, startTime, endTime,
     }
 
     // Check for conflicting appointments
-    const conflictingAppointments = await Appointment.find({
-        $or: [{ doctor: doctorId }, { hospital: hospitalId }],
+    const query = {
         date,
         $or: [
             { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
             { startTime: { $gte: startTime, $lt: endTime } }
         ],
         status: { $in: ['pending', 'confirmed'] }
-    });
+    };
 
+    if (doctorId) query.doctor = doctorId;
+    if (hospitalId) query.hospital = hospitalId;
+
+    const conflictingAppointments = await Appointment.find(query);
     return conflictingAppointments.length === 0;
 };
 
