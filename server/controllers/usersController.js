@@ -105,7 +105,7 @@ module.exports.verifyLoginEmailOtp = async (req, res) => {
     } else {
       user.otp = null;
       await user.save();
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ id: user._id , role: user.role }, process.env.JWT_SECRET, {
         expiresIn: "24h",
       });
       return res.status(200).json({

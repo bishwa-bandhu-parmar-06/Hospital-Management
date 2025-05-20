@@ -84,7 +84,14 @@ const App = () => {
         <Route path="/rejectionpage" element={<RejectedApprovalPage />} />
         <Route path="/hospital/:hospitalId" element={<HospitalDetails />} />
         <Route path="/hospitals" element={<AllHospitals />} />
-        <Route path="/book-appointment" element={<BookAppointmentForm />} />
+        <Route
+          path="/book-appointment"
+          element={
+            <PrivateRoute>
+              <BookAppointmentForm />
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
