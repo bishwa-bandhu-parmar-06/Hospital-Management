@@ -5,25 +5,20 @@ import EditProfileModal from "./ProfileUpdateForm";
 import { toast } from "react-toastify";
 import { FaPencilAlt } from "react-icons/fa";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AllPatientAppointment from "./AllPatientAppointment";
 
 const PatientProfile = () => {
-  const backendUrl =import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
-
-
- const [activeComponent, setActiveComponent] = useState("Appliedappointments");
+  const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const [activeComponent, setActiveComponent] = useState("Appliedappointments");
   const [patient, setPatient] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [profilePreview, setProfilePreview] = useState(defaultprofile);
   const [bannerPreview, setBannerPreview] = useState(
     "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
   );
+  const [isLoading, setIsLoading] = useState(true);
 
-  // function to handle component change
-  const handleComponentChange = (component) => {
-    setActiveComponent(component);
-  };
   const navigate = useNavigate();
   const profileInputRef = useRef(null);
   const bannerInputRef = useRef(null);
@@ -32,6 +27,11 @@ const PatientProfile = () => {
     const fetchPatientProfileData = async () => {
       try {
         const token = localStorage.getItem("patientToken");
+        if (!token) {
+          navigate('/auth');
+          return;
+        }
+
         const response = await fetch(`${backendUrl}/users/profile`, {
           method: "GET",
           headers: {
@@ -49,15 +49,24 @@ const PatientProfile = () => {
             setBannerPreview(data.user.bannerImage);
           }
         } else {
-          console.error("Error fetching patient profile: ", data.message);
+          toast.error(data.message || "Error fetching profile");
+          navigate('/auth');
         }
       } catch (error) {
         console.error("Error Fetching Patient Profile: ", error);
+        toast.error("Error fetching profile");
+        navigate('/auth');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchPatientProfileData();
-  }, [backendUrl]);
+  }, [backendUrl, navigate]);
+
+  const handleComponentChange = (componentName) => {
+    setActiveComponent(componentName);
+  };
 
   const handleFileChange = async (e, type) => {
     const file = e.target.files[0];
@@ -171,17 +180,16 @@ const PatientProfile = () => {
     }
   };
 
-  // Redirect to bookAppointment if activeComponent is "bookAppointment"
-  if (activeComponent === "bookAppointment") {
-    return <Navigate to="/doctors" />;
-  }
-
-  if (!patient) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader />
       </div>
     );
+  }
+
+  if (!patient) {
+    return null;
   }
 
   return (
@@ -270,7 +278,6 @@ const PatientProfile = () => {
             <div className="flex items-center">
               <svg className="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="text-gray-700">{patient.address || "Address not specified"}</span>
             </div>
@@ -280,17 +287,18 @@ const PatientProfile = () => {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 md:gap-4">
           <button
-            onClick={() => handleComponentChange("bookAppointment")}
+            onClick={() => navigate("/doctors")}
+
             className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
           >
-            Book Appoinment
+            Book Appointment
           </button>
           <button
-            onClick={() => handleComponentChange("Appliedappointments")}
-            className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
-          >
-            Applied Appointment
-          </button>
+        onClick={() => handleComponentChange("Appliedappointments")}
+        className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
+      >
+        Applied Appointments
+      </button>
           <button
             onClick={() => {
               setShowEditForm(true);
@@ -315,16 +323,18 @@ const PatientProfile = () => {
         </div>
       </div>
 
-      {activeComponent === "Appliedappointments" && (
-        <AllPatientAppointment patient={patient} onClose={() => setActiveComponent("")} />
-      )}
-      {/* Edit Profile Modal */}
+      {/* Render the active component */}
       {showEditForm && (
         <EditProfileModal
           patient={patient}
           onClose={() => setShowEditForm(false)}
           onSubmit={handlePatientUpdationForm}
         />
+      )}
+
+      {/* Conditional Rendering */}
+      {activeComponent === "Appliedappointments" && (
+        <AllPatientAppointment />
       )}
     </div>
   );

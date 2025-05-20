@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -14,13 +14,14 @@ export const useAppointment = () => {
 
 export const AppointmentProvider = ({ children }) => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
 
-  const fetchAppointments = async (type) => {
+  const fetchAppointments = useCallback(async (type) => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem('patientToken') || 
                     localStorage.getItem('doctorToken') || 
                     localStorage.getItem('hospitalToken');
@@ -34,14 +35,13 @@ export const AppointmentProvider = ({ children }) => {
       });
 
       setAppointments(response.data.appointments);
-      setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Failed to fetch appointments');
       toast.error(err.response?.data?.message || 'Failed to fetch appointments');
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendUrl]);
 
   const bookAppointment = async (appointmentData) => {
     try {
@@ -75,7 +75,7 @@ export const AppointmentProvider = ({ children }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success('Appointment confirmed successfully');
+      // toast.success('Appointment confirmed successfully');
       return response.data;
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to confirm appointment');

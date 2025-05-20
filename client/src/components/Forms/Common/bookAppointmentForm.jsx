@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import Loader from '../../Loader';
+import { toast } from 'react-toastify';
 
 const BookAppointmentForm = () => {
     const navigate = useNavigate();
@@ -46,15 +47,23 @@ const BookAppointmentForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.doctorId) {
+            toast.error('Please select a doctor first');
+            navigate('/doctors');
+            return;
+        }
+
         try {
             setLoading(true);
             await bookAppointment({
                 ...formData,
                 date: formData.date.toISOString().split('T')[0]
             });
+            // toast.success('Appointment booked successfully');
             navigate('/patient/dashboard');
         } catch (error) {
             console.error('Error booking appointment:', error);
+            toast.error(error.response?.data?.message || 'Failed to book appointment');
         } finally {
             setLoading(false);
         }
