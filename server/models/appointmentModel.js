@@ -8,7 +8,8 @@ const appointmentSchema = new mongoose.Schema({
     },
     doctor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Doctor'
+        ref: 'Doctor',
+        required: true
     },
     hospital: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,11 +27,6 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    type: {
-        type: String,
-        enum: ['online', 'offline'],
-        required: true
-    },
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'cancelled', 'completed'],
@@ -38,19 +34,6 @@ const appointmentSchema = new mongoose.Schema({
     },
     symptoms: String,
     notes: String,
-    payment: {
-        amount: Number,
-        method: String,
-        status: {
-            type: String,
-            enum: ['pending', 'completed', 'failed', 'refunded'],
-            default: 'pending'
-        },
-        razorpayOrderId: String,
-        razorpayPaymentId: String,
-        razorpaySignature: String
-    },
-    meetingLink: String, // For online appointments
     cancellationReason: String,
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

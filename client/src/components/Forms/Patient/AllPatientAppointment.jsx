@@ -2,44 +2,21 @@ import React, { useEffect } from 'react';
 import { useAppointment } from '../../../context/AppointmentContext';
 import Loader from '../../Loader';
 
-const PendingAppointments = () => {
-    const {
-        appointments,
-        loading,
-        error,
-        fetchAppointments,
-        confirmAppointment,
-        cancelAppointment
-    } = useAppointment();
+const AllPatientAppointment = () => {
+    const { appointments, loading, error, fetchAppointments } = useAppointment();
 
     useEffect(() => {
-        fetchAppointments('doctor', 'pending');
+        fetchAppointments('patient');
     }, [fetchAppointments]);
-
-    const handleConfirm = async (appointmentId) => {
-        try {
-            await confirmAppointment(appointmentId);
-        } catch (error) {
-            console.error('Error confirming appointment:', error);
-        }
-    };
-
-    const handleCancel = async (appointmentId) => {
-        try {
-            await cancelAppointment(appointmentId);
-        } catch (error) {
-            console.error('Error canceling appointment:', error);
-        }
-    };
 
     if (loading) return <Loader />;
     if (error) return <div className="text-red-500">{error}</div>;
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">Pending Appointments</h1>
+            <h1 className="text-2xl font-bold mb-6">My Appointments</h1>
             {appointments.length === 0 ? (
-                <p className="text-gray-500">No pending appointments found.</p>
+                <p className="text-gray-500">No appointments found.</p>
             ) : (
                 <div className="grid gap-6">
                     {appointments.map((appointment) => (
@@ -50,26 +27,24 @@ const PendingAppointments = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h2 className="text-xl font-semibold">
-                                        Patient: {appointment.patient.name}
+                                        Dr. {appointment.doctor.name}
                                     </h2>
                                     <p className="text-gray-600">
                                         {appointment.hospital?.name || 'Online Consultation'}
                                     </p>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => handleConfirm(appointment._id)}
-                                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-300"
-                                    >
-                                        Confirm
-                                    </button>
-                                    <button
-                                        onClick={() => handleCancel(appointment._id)}
-                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
+                                <span
+                                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                        appointment.status === 'confirmed'
+                                            ? 'bg-green-100 text-green-800'
+                                            : appointment.status === 'pending'
+                                            ? 'bg-yellow-100 text-yellow-800'
+                                            : 'bg-red-100 text-red-800'
+                                    }`}
+                                >
+                                    {appointment.status.charAt(0).toUpperCase() +
+                                        appointment.status.slice(1)}
+                                </span>
                             </div>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div>
@@ -109,4 +84,4 @@ const PendingAppointments = () => {
     );
 };
 
-export default PendingAppointments;
+export default AllPatientAppointment; 

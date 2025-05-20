@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loader from "../../Loader";
+import axios from 'axios';
+import { useAppointment } from '../../../context/AppointmentContext';
+import { jwtDecode } from 'jwt-decode';
 
 const HospitalDetails = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
@@ -9,6 +12,7 @@ const HospitalDetails = () => {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { bookAppointment } = useAppointment();
 
   useEffect(() => {
     const fetchHospital = async () => {
@@ -49,6 +53,30 @@ const HospitalDetails = () => {
 
     fetchHospital();
   }, [backendUrl, id, navigate]);
+
+  const handleBookAppointment = async (doctorId) => {
+    const token = localStorage.getItem('patientToken');
+    if (!token) {
+      navigate('/auth', { replace: true });
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      if (decoded.role !== 'patient') {
+        toast.error('Only patients can book appointments');
+        navigate('/auth', { replace: true });
+        return;
+      }
+
+      navigate('/book-appointment', {
+        state: { doctorId, hospitalId: id }
+      });
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      navigate('/auth', { replace: true });
+    }
+  };
 
   if (loading) {
     return <div className="text-center py-12"><Loader /></div>;
@@ -191,6 +219,40 @@ const HospitalDetails = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 mt-8">
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-6">Available Doctors</h2>
+          {hospital.doctors.length === 0 ? (
+            <p className="text-gray-500">No doctors available at this hospital.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hospital.doctors.map((doctor) => (
+                <div
+                  key={doctor._id}
+                  className="bg-gray-50 rounded-lg p-4 shadow-sm"
+                >
+                  <h3 className="text-xl font-semibold mb-2">
+                    Dr. {doctor.name}
+                  </h3>
+                  <p className="text-gray-600 mb-2">
+                    {doctor.specialization}
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    Experience: {doctor.experience} years
+                  </p>
+                  <button
+                    onClick={() => handleBookAppointment(doctor._id)}
+                    className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-secondary transition-colors duration-300"
+                  >
+                    Book Appointment
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
