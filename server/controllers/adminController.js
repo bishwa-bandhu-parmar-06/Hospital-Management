@@ -90,7 +90,7 @@ module.exports.verifyAdminLoginEmailotp = async(req, res) =>{
         if(admin.otp !== otp){
             return res.status(400).json({message: "Invalid OTP"});
         }
-        const token = jwt.sign({id: admin._id}, process.env.JWT_SECRET, {expiresIn: "24h"});
+        const token = jwt.sign({id: admin._id,role: admin.role}, process.env.JWT_SECRET, {expiresIn: "24h"});
         admin.otp = null;
         await admin.save();
         return res.status(200).json({message: "Login successful", token, admin});

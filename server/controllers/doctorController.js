@@ -110,7 +110,7 @@ module.exports.verifyLoginOtp = async (req, res) => {
       doctor.isVerified = true;
       doctor.otp = null;
       await doctor.save();
-      const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ id: doctor._id , role: doctor.role}, process.env.JWT_SECRET, {
         expiresIn: "24h",
       });
       return res

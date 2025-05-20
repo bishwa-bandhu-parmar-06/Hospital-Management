@@ -15,10 +15,19 @@ const PendingAppointments = () => {
     const [pendingCount, setPendingCount] = useState(0);
 
     useEffect(() => {
-        fetchAppointments('doctor', 'pending');
+        console.log('PendingAppointments mounted');
+        const loadAppointments = async () => {
+            try {
+                await fetchAppointments('doctor', 'pending');
+            } catch (err) {
+                console.error('Error loading appointments:', err);
+            }
+        };
+        loadAppointments();
     }, [fetchAppointments]);
 
     useEffect(() => {
+        console.log('Appointments updated:', appointments);
         setPendingCount(appointments.length);
     }, [appointments]);
 
@@ -26,8 +35,9 @@ const PendingAppointments = () => {
         try {
             await confirmAppointment(appointmentId);
             toast.success('Appointment confirmed successfully');
-            fetchAppointments('doctor', 'pending'); // Refresh the list
+            await fetchAppointments('doctor', 'pending'); // Refresh the list
         } catch (error) {
+            console.error('Error confirming appointment:', error);
             toast.error(error.response?.data?.message || 'Failed to confirm appointment');
         }
     };
@@ -39,8 +49,9 @@ const PendingAppointments = () => {
         try {
             await cancelAppointment(appointmentId, reason);
             toast.success('Appointment cancelled successfully');
-            fetchAppointments('doctor', 'pending'); // Refresh the list
+            await fetchAppointments('doctor', 'pending'); // Refresh the list
         } catch (error) {
+            console.error('Error cancelling appointment:', error);
             toast.error(error.response?.data?.message || 'Failed to cancel appointment');
         }
     };
@@ -70,7 +81,7 @@ const PendingAppointments = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h2 className="text-xl font-semibold">
-                                        Patient: {appointment.patient.name}
+                                        Patient: {appointment.patient?.name || 'Unknown Patient'}
                                     </h2>
                                     <p className="text-gray-600">
                                         {appointment.hospital?.name || 'Online Consultation'}
@@ -110,7 +121,9 @@ const PendingAppointments = () => {
                                 </div>
                                 <div>
                                     <p className="text-gray-600">Contact</p>
-                                    <p className="font-medium">{appointment.patient.mobile || appointment.patient.email}</p>
+                                    <p className="font-medium">
+                                        {appointment.patient?.mobile || appointment.patient?.email || 'N/A'}
+                                    </p>
                                 </div>
                             </div>
                             {appointment.notes && (
