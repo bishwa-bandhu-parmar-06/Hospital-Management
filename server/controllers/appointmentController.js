@@ -12,19 +12,32 @@ const razorpay = new Razorpay({
 });
 
 // Book appointment
-// Book appointment
 module.exports.bookAppointment = async (req, res) => {
     try {
-        const { doctorId, hospitalId, date, startTime, endTime, type, symptoms, notes } = req.body;
+        const { doctorId, hospitalId, date, startTime, endTime, symptoms, notes } = req.body;
         const patientId = req.user.id;
 
-        // Validate that either doctor or hospital is selected
-        if (!doctorId && !hospitalId) {
-            return res.status(400).json({ message: "Either doctor or hospital must be selected" });
+        // Validate required fields
+        if (!doctorId) {
+            return res.status(400).json({ message: "Doctor ID is required" });
+        }
+
+        // Check if doctor exists and is approved
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor || doctor.status !== 'approved') {
+            return res.status(400).json({ message: "Invalid or unapproved doctor" });
+        }
+
+        // Check if hospital exists and is approved (if provided)
+        if (hospitalId) {
+            const hospital = await Hospital.findById(hospitalId);
+            if (!hospital || hospital.status !== 'approved') {
+                return res.status(400).json({ message: "Invalid or unapproved hospital" });
+            }
         }
 
         // Check availability
-        const isAvailable = await checkAvailability(doctorId, hospitalId, date, startTime, endTime, type);
+        const isAvailable = await checkAvailability(doctorId, hospitalId, date, startTime, endTime);
         if (!isAvailable) {
             return res.status(400).json({ message: "The selected slot is not available" });
         }
@@ -33,11 +46,10 @@ module.exports.bookAppointment = async (req, res) => {
         const newAppointment = new Appointment({
             patient: patientId,
             doctor: doctorId,
-            hospital: hospitalId,
+            hospital: hospitalId || undefined,
             date,
             startTime,
             endTime,
-            type,
             symptoms,
             notes,
             createdBy: patientId
@@ -59,19 +71,7 @@ module.exports.bookAppointment = async (req, res) => {
 };
 
 // Check availability
-const checkAvailability = async (doctorId, hospitalId, date, startTime, endTime, type) => {
-    // Check if doctor exists and is approved
-    if (doctorId) {
-        const doctor = await Doctor.findById(doctorId);
-        if (!doctor || doctor.status !== 'approved') return false;
-    }
-
-    // Check if hospital exists and is approved
-    if (hospitalId) {
-        const hospital = await Hospital.findById(hospitalId);
-        if (!hospital || hospital.status !== 'approved') return false;
-    }
-
+const checkAvailability = async (doctorId, hospitalId, date, startTime, endTime) => {
     // Check for conflicting appointments
     const query = {
         date,
