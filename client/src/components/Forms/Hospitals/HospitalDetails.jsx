@@ -54,29 +54,40 @@ const HospitalDetails = () => {
     fetchHospital();
   }, [backendUrl, id, navigate]);
 
-  const handleBookAppointment = async (doctorId) => {
-    const token = localStorage.getItem('patientToken');
-    if (!token) {
-      navigate('/auth', { replace: true });
-      return;
-    }
-
-    try {
-      const decoded = jwtDecode(token);
-      if (decoded.role !== 'patient') {
-        toast.error('Only patients can book appointments');
+  const handleBookAppointment = () => {
+      // First check for any valid token
+      const token = localStorage.getItem('patientToken');
+  
+      if (!token) {
+        toast.error("Please login as a patient to book an appointment");
         navigate('/auth', { replace: true });
         return;
       }
-
-      navigate('/book-appointment', {
-        state: { doctorId, hospitalId: id }
-      });
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      navigate('/auth', { replace: true });
-    }
-  };
+  
+      // Immediately decode to check role
+      try {
+        const decoded = jwtDecode(token);
+        // console.log("Decoded token in click handler:", decoded);
+        
+        if (decoded.role !== 'patient') {
+          toast.error("Only patients can book appointments");
+          return;
+        }
+  
+        // If we get here, proceed to booking
+        navigate('/book-appointment', { 
+          state: { 
+            hospitalId: id, 
+            hospitalName: hospital.name 
+          },
+          replace: true 
+        });
+      } catch (error) {
+        console.error("Token decode error:", error);
+        toast.error("Session error. Please login again");
+        navigate('/auth', { replace: true });
+      }
+    };
 
   if (loading) {
     return <div className="text-center py-12"><Loader /></div>;
@@ -141,7 +152,12 @@ const HospitalDetails = () => {
                   Visit Website
                 </a>
               )}
-
+<button
+                onClick={handleBookAppointment}
+                className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-colors duration-300 mb-4"
+              >
+                Book Appointment
+              </button>
               <Link 
                 to="/hospitals" 
                 className="text-primary hover:text-secondary font-medium underline"

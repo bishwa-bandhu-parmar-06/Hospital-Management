@@ -29,7 +29,7 @@ const Home = () => {
             <button onClick={() => navigate("/doctors")} className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">
               Book Appointment
             </button>
-            <button className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">
+            <button onClick={() => navigate("/hospitals")} className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">
               Explore!
             </button>
           </div>
