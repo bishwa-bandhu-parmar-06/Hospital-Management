@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import Loader from '../../Loader';
 import { useNavigate } from 'react-router-dom';
 const AllDoctors = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
