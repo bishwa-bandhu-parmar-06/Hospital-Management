@@ -2,7 +2,7 @@
 // Description: This component fetches and displays feedback from patients, allowing users to navigate through the feedback using arrows or dots.
 import React, { useState, useEffect } from 'react';
 import { getFeedbacks } from '../../utils/feedbackApi'; // Adjust the import path as needed
-
+import Loader from "../Loader"
 const FeedBackHome = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ const FeedBackHome = () => {
   if (loading) {
     return (
       <div className="py-16 bg-accentlight text-center">
-        <p>Loading feedback...</p>
+        <Loader />
       </div>
     );
   }

@@ -7,7 +7,6 @@ const PartnerHomePage = () => {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     const fetchPartnerHospitals = async () => {
       try {
@@ -17,38 +16,41 @@ const PartnerHomePage = () => {
             "Content-Type": "application/json",
           },
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
-        if (response.ok) {
-          // Filter to only show approved hospitals
-          const approvedHospitals = Array.isArray(data.hospital) 
-            ? data.hospital.filter(hospital => hospital.status === "approved")
-            : [];
-          setHospitals(approvedHospitals.length > 0 ? approvedHospitals : demoHospitals);
-        } else {
-          toast.error(data.message || "Failed to fetch hospitals");
-          setHospitals(demoHospitals);
-        }
+        // Filter to only show approved hospitals
+        const approvedHospitals = Array.isArray(data.hospital) 
+          ? data.hospital.filter(hospital => hospital.status === "approved")
+          : [];
+          
+        setHospitals(approvedHospitals);
       } catch (error) {
-        toast.error("Network error. Using demo data");
         console.error("Fetch hospitals error:", error);
-        setHospitals(demoHospitals); 
+        toast.error(error.message || "Failed to fetch hospitals");
+        setHospitals([]); 
       } finally {
         setLoading(false);
       }
     };
+    
     fetchPartnerHospitals();
   }, [backendUrl]);
 
   const handleNavigation = () => {
     window.location.href = "/auth";
-};
+  };
+
   if (loading) {
     return <Loader />;
   }
 
   return (
-    <div className="min-h-screen bg-accentlight from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Animated Header */}
         <div className="animate-slideInRight mb-16">
@@ -65,7 +67,7 @@ const PartnerHomePage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {hospitals.map((hospital, index) => (
             <div 
-              key={hospital._id}
+              key={hospital._id || index}
               className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-slideInRight delay-${index * 100}`}
             >
               <div className="h-48 overflow-hidden">
@@ -104,7 +106,10 @@ const PartnerHomePage = () => {
                     ))}
                   </div>
                 </div>
-                <button onClick={() => window.location.href = `/hospital/${hospital._id}`}className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-accent transition-colors duration-300">
+                <button 
+                  onClick={() => window.location.href = `/hospital/${hospital._id}`}
+                  className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-accent transition-colors duration-300"
+                >
                   View Details
                 </button>
               </div>
@@ -118,7 +123,10 @@ const PartnerHomePage = () => {
           <p className="text-lg text-gray-600 mb-6 max-w-3xl mx-auto">
             Join our network of premium healthcare providers and expand your reach to thousands of patients.
           </p>
-          <button onClick={handleNavigation} className="px-8 py-3 bg-secondary text-white rounded-lg font-bold hover:bg-accent transition-colors duration-300 shadow-md hover:shadow-lg">
+          <button 
+            onClick={handleNavigation} 
+            className="px-8 py-3 bg-secondary text-white rounded-lg font-bold hover:bg-accent transition-colors duration-300 shadow-md hover:shadow-lg"
+          >
             Become a Partner
           </button>
         </div>

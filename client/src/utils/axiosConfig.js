@@ -1,20 +1,21 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URI || 'http://localhost:3000/api/v1',
+  baseURL: (import.meta.env.VITE_BACKEND_URI || 'http://localhost:3000/api/v1'),
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
-// Add a response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error.response);
-    return Promise.reject(
-      error.response?.data?.message || error.message || 'Something went wrong'
-    );
+  response => response,
+  error => {
+    const errorMessage = error.response?.data?.message || 
+                        error.message || 
+                        'Network error. Please try again.';
+    console.error('API Error:', errorMessage);
+    return Promise.reject(errorMessage);
   }
 );
 

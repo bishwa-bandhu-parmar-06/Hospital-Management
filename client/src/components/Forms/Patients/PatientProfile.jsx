@@ -10,7 +10,7 @@ import AllPatientAppointment from "./AllPatientAppointment";
 
 const PatientProfile = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
-  const [activeComponent, setActiveComponent] = useState("");
+  const [activeComponent, setActiveComponent] = useState("Appliedappointments");
   const [patient, setPatient] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [profilePreview, setProfilePreview] = useState(defaultprofile);
