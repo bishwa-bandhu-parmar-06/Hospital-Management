@@ -38,7 +38,8 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
-      'http://localhost:5173'
+      // 'http://localhost:5173'
+      'https://aatura-client.onrender.com/'
     ].filter(Boolean);
     
     if (!origin || allowedOrigins.some(allowed => origin.startsWith(allowed.replace(/\/$/, '')))) {
