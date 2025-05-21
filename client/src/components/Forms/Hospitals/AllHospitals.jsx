@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Loader from '../../Loader';
 
 const AllHospitals = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
