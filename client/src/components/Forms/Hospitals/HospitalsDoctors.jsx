@@ -2,7 +2,9 @@ import React from 'react'
 
 const HospitalsDoctors = () => {
   return (
-    <div>HospitalsDoctors</div>
+    <div>
+      No Doctors Found with this Hospitals.
+    </div>
   )
 }
 

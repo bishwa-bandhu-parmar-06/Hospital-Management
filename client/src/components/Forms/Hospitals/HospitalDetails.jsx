@@ -12,7 +12,7 @@ const HospitalDetails = () => {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { bookAppointment } = useAppointment();
+  
 
   useEffect(() => {
     const fetchHospital = async () => {
@@ -225,7 +225,7 @@ const HospitalDetails = () => {
       <div className="container mx-auto px-4 py-8 mt-8">
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-bold mb-6">Available Doctors</h2>
-          {hospital.doctors.length === 0 ? (
+          {(!hospital.doctors || hospital.doctors.length === 0) ? (
             <p className="text-gray-500">No doctors available at this hospital.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
