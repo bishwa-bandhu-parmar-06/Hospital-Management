@@ -1,12 +1,11 @@
 // components/profile/ProfileForm.jsx
 import React, { useState } from 'react';
 
-const ProfileForm = ({ user, onSubmit, loading }) => {
+const ProfileForm = ({ patient, onSubmit, loading }) => {
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    mobile: user?.mobile || '',
-    profilePhoto: null
+    name: patient?.name || '',
+    email: patient?.email || '',
+    mobile: patient?.mobile || '',
   });
 
   const handleChange = (e) => {
@@ -23,7 +22,7 @@ const ProfileForm = ({ user, onSubmit, loading }) => {
     if (formData.name) formPayload.append('name', formData.name);
     if (formData.email) formPayload.append('email', formData.email);
     if (formData.mobile) formPayload.append('mobile', formData.mobile);
-    if (formData.profilePhoto) formPayload.append('profilePhoto', formData.profilePhoto);
+    
     
     onSubmit(formPayload);
   };

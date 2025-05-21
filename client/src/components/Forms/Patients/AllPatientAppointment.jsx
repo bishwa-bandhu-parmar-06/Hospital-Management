@@ -1,115 +1,168 @@
-import React, { useEffect, useState } from 'react';
-import { useAppointment } from '../../../context/AppointmentContext';
-import Loader from '../../Loader';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AllPatientAppointment = () => {
-    const { appointments, loading, error, fetchAppointments } = useAppointment();
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const backendUri = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const loadAppointments = async () => {
-            try {
-                console.log('Loading patient appointments...');
-                await fetchAppointments('patient');
-                console.log('Appointments loaded:', appointments);
-            } catch (err) {
-                console.error('Error loading appointments:', err);
-                toast.error('Failed to load appointments');
-            } finally {
-                setIsInitialLoad(false);
-            }
-        };
-        loadAppointments();
-    }, [fetchAppointments]);
-
-    useEffect(() => {
-        console.log('Appointments updated:', appointments);
-    }, [appointments]);
-
-    const getStatusBadgeClass = (status) => {
-        switch (status?.toLowerCase()) {
-            case 'pending':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'confirmed':
-                return 'bg-green-100 text-green-800';
-            case 'cancelled':
-                return 'bg-red-100 text-red-800';
-            case 'completed':
-                return 'bg-blue-100 text-blue-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
+  useEffect(() => {
+    const fetchAllAppointments = async () => {
+      try {
+        const token = localStorage.getItem('patientToken');
+        // console.log("Patient Token : ", token);
+        if (!token) {
+          navigate('/auth');
+          return;
         }
+
+        const response = await axios.get(`${backendUri}/appointment/get-appointments`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        // console.log("Response : ", response);
+        // console.log("Appointments : ", response.data?.appointments);
+        // Add null check and default to empty array if undefined
+        setAppointments(response.data?.appointments || []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch appointments');
+        setAppointments([]); // Ensure appointments is always an array
+        setLoading(false);
+      }
     };
 
-    if (loading && isInitialLoad) return <Loader />;
-    if (error) return <div className="text-red-500">{error}</div>;
+    fetchAllAppointments();
+    const interval = setInterval(fetchAllAppointments, 30000);
+    return () => clearInterval(interval);
+  }, [navigate, filter]);
 
+  // Safely filter appointments - now guaranteed to be an array
+  const filteredAppointments = appointments.filter(appt => {
+    if (filter === 'all') return true;
+    if (filter === 'doctor') return appt?.doctor;
+    if (filter === 'hospital') return appt?.hospital;
+    return true;
+  });
+
+  // Rest of your component remains the same...
+  const getAppointmentType = (appointment) => {
+    if (appointment?.doctor) return 'Doctor';
+    if (appointment?.hospital) return 'Hospital';
+    return 'Unknown';
+  };
+
+  const getStatusBadge = (status) => {
+    const statusClasses = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      confirmed: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800',
+      completed: 'bg-blue-100 text-blue-800'
+    };
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-6">My Appointments</h1>
-            {!appointments || appointments.length === 0 ? (
-                <p className="text-gray-500">No appointments found.</p>
-            ) : (
-                <div className="grid gap-6">
-                    {appointments.map((appointment) => (
-                        <div
-                            key={appointment._id}
-                            className="bg-white p-6 rounded-lg shadow-md"
-                        >
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-xl font-semibold">
-                                        Dr. {appointment.doctor?.name || 'Unknown Doctor'}
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        {appointment.hospital?.name || 'Online Consultation'}
-                                    </p>
-                                </div>
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeClass(appointment.status)}`}>
-                                    {appointment.status?.charAt(0).toUpperCase() + appointment.status?.slice(1)}
-                                </span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <p className="text-gray-600">Date</p>
-                                    <p className="font-medium">
-                                        {new Date(appointment.date).toLocaleDateString()}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Time</p>
-                                    <p className="font-medium">
-                                        {appointment.startTime} - {appointment.endTime}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Symptoms</p>
-                                    <p className="font-medium">{appointment.symptoms}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Specialization</p>
-                                    <p className="font-medium">{appointment.doctor?.specialization || 'Not specified'}</p>
-                                </div>
-                            </div>
-                            {appointment.notes && (
-                                <div className="mt-4">
-                                    <p className="text-gray-600">Additional Notes</p>
-                                    <p className="font-medium">{appointment.notes}</p>
-                                </div>
-                            )}
-                            {appointment.cancellationReason && (
-                                <div className="mt-4">
-                                    <p className="text-gray-600">Cancellation Reason</p>
-                                    <p className="font-medium text-red-600">{appointment.cancellationReason}</p>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100'}`}>
+        {status}
+      </span>
     );
+  };
+
+  if (loading) return <div className="text-center py-8">Loading appointments...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">My Appointments</h1>
+      
+      <div className="mb-6 flex flex-wrap gap-4">
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-4 py-2 rounded ${filter === 'all' ? 'bg-secondary text-white' : 'bg-gray-200'}`}
+        >
+          All Appointments
+        </button>
+        <button
+          onClick={() => setFilter('doctor')}
+          className={`px-4 py-2 rounded ${filter === 'doctor' ? 'bg-secondary text-white' : 'bg-gray-200'}`}
+        >
+          Doctor Appointments
+        </button>
+        <button
+          onClick={() => setFilter('hospital')}
+          className={`px-4 py-2 rounded ${filter === 'hospital' ? 'bg-secondary text-white' : 'bg-gray-200'}`}
+        >
+          Hospital Appointments
+        </button>
+      </div>
+
+      {filteredAppointments.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No appointments found
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">With</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredAppointments.map((appointment) => (
+                <tr key={appointment._id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {getAppointmentType(appointment)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {appointment.doctor?.name || appointment.hospital?.name || 'N/A'}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {appointment.doctor?.specialization || appointment.hospital?.address || ''}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {new Date(appointment.date).toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {appointment.startTime} - {appointment.endTime}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(appointment.status)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="mb-1">
+                      <strong>Symptoms:</strong> {appointment.symptoms || 'None'}
+                    </div>
+                    {appointment.cancellationReason && (
+                      <div>
+                        <strong>Cancel Reason:</strong> {appointment.cancellationReason}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AllPatientAppointment;

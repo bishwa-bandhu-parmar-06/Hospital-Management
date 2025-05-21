@@ -5,7 +5,9 @@ import DoctorCardHome from "../components/CardComponents/DoctorCardHome";
 import FeedBackHome from "../components/CardComponents/FeedBackHome";
 import HowAuturaWorks from "../components/HowAutraWorks";
 import HospitalPartner from "../components/CardComponents/PartnerHomePage"
+import { Navigate, useNavigate } from 'react-router-dom';
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-accentlight relative">
       {/* Hero Section with absolute positioning */}
@@ -24,7 +26,7 @@ const Home = () => {
             Your Health is Our Priority.
           </p>
           <div className="w-full flex flex-wrap gap-3 sm:gap-4 mt-5 sm:mt-7">
-            <button className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">
+            <button onClick={() => navigate("/doctors")} className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">
               Book Appointment
             </button>
             <button className="text-secondary font-bold border-2 border-secondary rounded-lg px-3 py-1 sm:px-4 sm:py-2 hover:text-background hover:bg-secondary">

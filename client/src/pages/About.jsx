@@ -1,7 +1,8 @@
 import React from 'react';
 import { FaHeartbeat, FaUserMd, FaHospital, FaAward, FaClinicMedical } from 'react-icons/fa';
-
+import { Navigate, useNavigate } from 'react-router-dom';
 const About = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-[var(--color-background)]">
       {/* Hero Section */}
@@ -140,7 +141,7 @@ const About = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-[var(--color-secondary)] mb-6">Ready to Experience Exceptional Care?</h2>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">
+            <button onClick={() => navigate("/doctors")} className="bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">
               Book an Appointment
             </button>
             <button onClick={() => window.location.href = "/contact"} className="border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-white font-semibold py-3 px-8 rounded-lg transition-colors duration-300">

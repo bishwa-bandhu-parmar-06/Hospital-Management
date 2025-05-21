@@ -25,13 +25,13 @@ const DoctorDetail = () => {
     else if (doctorToken) tokenToDecode = doctorToken;
     else if (hospitalToken) tokenToDecode = hospitalToken;
     else if (adminToken) tokenToDecode = adminToken;
-    console.log("Token to decode:", tokenToDecode);
+    // console.log("Token to decode:", tokenToDecode);
     // Decode the token to get user role
     if (tokenToDecode) {
 
       try {
         const decoded = jwtDecode(tokenToDecode);
-        console.log("Decoded token:", decoded);
+        // console.log("Decoded token:", decoded);
         setUserRole(decoded.role);
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -91,7 +91,7 @@ const DoctorDetail = () => {
     // Immediately decode to check role
     try {
       const decoded = jwtDecode(token);
-      console.log("Decoded token in click handler:", decoded);
+      // console.log("Decoded token in click handler:", decoded);
       
       if (decoded.role !== 'patient') {
         toast.error("Only patients can book appointments");

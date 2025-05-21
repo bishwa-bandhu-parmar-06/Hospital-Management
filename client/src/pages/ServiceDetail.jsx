@@ -17,7 +17,7 @@ const ServiceDetail = () => {
   const IconComponent = FaIcons[service.icon];
 
   return (
-    <div className="bg-[var(--color-background)] py-12">
+    <div className="bg-[var(--color-accentlight)] py-12">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="flex flex-col md:flex-row gap-8">
