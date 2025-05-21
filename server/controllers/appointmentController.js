@@ -1,5 +1,5 @@
 const Appointment = require("../models/appointmentModel");
-// const User = require("../models/usersModel");
+const Patient = require("../models/usersModel");
 const Doctor = require("../models/doctorModels");
 const Hospital = require("../models/hospitalModels");
 // const { authenticate } = require("../middlewares/authMiddleware");
@@ -12,26 +12,30 @@ const razorpay = new Razorpay({
 });
 
 // Book appointment
+// Book appointment with enhanced validation
 module.exports.bookAppointment = async (req, res) => {
     try {
         const { doctorId, hospitalId, date, startTime, endTime, symptoms, notes } = req.body;
         const patientId = req.user.id;
 
-        // Validate required fields
-        if (!doctorId) {
-            return res.status(400).json({ message: "Doctor ID is required" });
+        // Validate appointment type
+        if (!doctorId && !hospitalId) {
+            return res.status(400).json({ message: "Either doctorId or hospitalId is required" });
         }
 
-        // Check if doctor exists and is approved
-        const doctor = await Doctor.findById(doctorId);
-        if (!doctor || doctor.status !== 'approved') {
-            return res.status(400).json({ message: "Invalid or unapproved doctor" });
-        }
+        // Determine appointment type
+        const appointmentType = doctorId ? 'doctor' : 'hospital';
 
-        // Check if hospital exists and is approved (if provided)
-        if (hospitalId) {
-            const hospital = await Hospital.findById(hospitalId);
-            if (!hospital || hospital.status !== 'approved') {
+        // Validate the selected entity exists and is approved
+        let entity;
+        if (appointmentType === 'doctor') {
+            entity = await Doctor.findById(doctorId);
+            if (!entity || entity.status !== 'approved') {
+                return res.status(400).json({ message: "Invalid or unapproved doctor" });
+            }
+        } else {
+            entity = await Hospital.findById(hospitalId);
+            if (!entity || entity.status !== 'approved') {
                 return res.status(400).json({ message: "Invalid or unapproved hospital" });
             }
         }
@@ -45,19 +49,20 @@ module.exports.bookAppointment = async (req, res) => {
         // Create appointment
         const newAppointment = new Appointment({
             patient: patientId,
-            doctor: doctorId,
+            doctor: doctorId || undefined,
             hospital: hospitalId || undefined,
             date,
             startTime,
             endTime,
             symptoms,
             notes,
-            createdBy: patientId
+            createdBy: patientId,
+            appointmentType
         });
 
         await newAppointment.save();
 
-        // Notify doctor/hospital
+        // Notify the appropriate entity (doctor or hospital)
         await sendAppointmentNotification(newAppointment);
 
         return res.status(201).json({
@@ -186,7 +191,7 @@ module.exports.getDoctorAppointments = async (req, res) => {
     try {
         const doctorId = req.user.id;
         const appointments = await Appointment.find({ doctor: doctorId })
-            .populate('patient', 'name email mobile')
+            .populate('patient', 'name email mobile') // This will work because 'patient' field references the 'Patient' model
             .populate('hospital', 'name address')
             .sort({ date: -1, startTime: -1 });
 
@@ -202,13 +207,65 @@ module.exports.getHospitalAppointments = async (req, res) => {
     try {
         const hospitalId = req.user.id;
         const appointments = await Appointment.find({ hospital: hospitalId })
-            .populate('patient', 'name email mobile')
+            .populate('patient', 'name email mobile') // This will work because 'patient' field references the 'Patient' model
             .populate('doctor', 'name specialization')
             .sort({ date: -1, startTime: -1 });
 
         return res.status(200).json({ appointments });
     } catch (error) {
         console.error("Error in getHospitalAppointments:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get appointments with filters
+module.exports.getAppointments = async (req, res) => {
+    try {
+        const { status, type } = req.query;
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        let query = {};
+        let populateFields = [];
+
+        // Determine the query based on user role
+        if (userRole === 'patient') {
+            query.patient = userId;
+            populateFields = [
+                { path: 'doctor', select: 'name specialization' },
+                { path: 'hospital', select: 'name address' }
+            ];
+        } else if (userRole === 'doctor') {
+            query.doctor = userId;
+            populateFields = [
+                { path: 'patient', select: 'name email mobile' }, // This will work
+                { path: 'hospital', select: 'name address' }
+            ];
+        } else if (userRole === 'hospital') {
+            query.hospital = userId;
+            populateFields = [
+                { path: 'patient', select: 'name email mobile' }, // This will work
+                { path: 'doctor', select: 'name specialization' }
+            ];
+        }
+
+        // Apply status filter if provided
+        if (status) {
+            query.status = status;
+        }
+
+        // Apply type filter if provided
+        if (type) {
+            query.appointmentType = type;
+        }
+
+        const appointments = await Appointment.find(query)
+            .populate(populateFields)
+            .sort({ date: 1, startTime: 1 });
+
+        return res.status(200).json({ appointments });
+    } catch (error) {
+        console.error("Error in getAppointments:", error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };

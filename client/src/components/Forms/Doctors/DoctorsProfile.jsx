@@ -14,6 +14,11 @@ const DoctorsProfile = () => {
   const [doctor, setDoctor] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [profilePreview, setProfilePreview] = useState(defaultprofile);
+
+   // Add these state variables
+  const [pendingCount, setPendingCount] = useState(0);
+  const [confirmedCount, setConfirmedCount] = useState(0);
+
   const [bannerPreview, setBannerPreview] = useState(
     "https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
   );
@@ -27,7 +32,26 @@ const DoctorsProfile = () => {
   const bannerInputRef = useRef(null);
 
   // Fetch doctor profile data
+   // Update the fetchDoctorProfileData function to also fetch counts
   useEffect(() => {
+    const fetchCounts = async (token) => {
+      try {
+        const pendingRes = await axios.get(
+          `${backendUrl}/appointment/get-appointments?status=pending&type=doctor&count=true`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPendingCount(pendingRes.data.count || 0);
+
+        const confirmedRes = await axios.get(
+          `${backendUrl}/appointment/get-appointments?status=confirmed&type=doctor&count=true`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setConfirmedCount(confirmedRes.data.count || 0);
+      } catch (err) {
+        console.error("Error fetching appointment counts:", err);
+      }
+    };
+
     const fetchDoctorProfileData = async () => {
       try {
         const token = localStorage.getItem("doctorToken");
@@ -47,11 +71,15 @@ const DoctorsProfile = () => {
           if (data.doctor.bannerImage) {
             setBannerPreview(data.doctor.bannerImage);
           }
+          // Fetch counts after successful profile fetch
+          await fetchCounts(token);
         } else {
           console.error("Error fetching doctor profile: ", data.message);
+          toast.error(data.message || "Error fetching profile");
         }
       } catch (error) {
         console.error("Error Fetching Doctor Profile: ", error);
+        toast.error("Error fetching profile");
       }
     };
 
@@ -330,18 +358,29 @@ const DoctorsProfile = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 md:gap-4">
-          <button
-            onClick={() => handleComponentChange("myappointments")}
-            className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
-          >
-            My Appointments
-          </button>
-          <button
-            onClick={() => handleComponentChange("pendingappointments")}
-            className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base"
-          >
-            Pending Appointments
-          </button>
+           
+  <button
+    onClick={() => handleComponentChange("myappointments")}
+    className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base relative"
+  >
+    My Appointments
+    {confirmedCount > 0 && (
+      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+        {confirmedCount}
+      </span>
+    )}
+  </button>
+  <button
+    onClick={() => handleComponentChange("pendingappointments")}
+    className="px-3 py-2 md:px-4 md:py-2 bg-secondary text-white rounded-md hover:bg-primary transition text-sm md:text-base relative"
+  >
+    Pending Appointments
+    {pendingCount > 0 && (
+      <span className="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+        {pendingCount}
+      </span>
+    )}
+  </button>
           <button
             onClick={() => {
               setShowEditForm(true);

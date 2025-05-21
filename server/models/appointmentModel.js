@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const appointmentSchema = new mongoose.Schema({
     patient: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Patient',  // Changed from 'User' to 'Patient' to match your model name
         required: true
     },
     doctor: {
@@ -37,6 +37,11 @@ const appointmentSchema = new mongoose.Schema({
     cancellationReason: String,
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    appointmentType: {  // Added this field to match your controller logic
+        type: String,
+        enum: ['doctor', 'hospital'],
         required: true
     }
 }, { timestamps: true });
