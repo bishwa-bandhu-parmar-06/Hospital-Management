@@ -17,15 +17,14 @@ const ProfileForm = ({ patient, onSubmit, loading }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const formPayload = new FormData();
-    if (formData.name) formPayload.append('name', formData.name);
-    if (formData.email) formPayload.append('email', formData.email);
-    if (formData.mobile) formPayload.append('mobile', formData.mobile);
-    
-    
-    onSubmit(formPayload);
-  };
+  e.preventDefault();
+  onSubmit({
+    name: formData.name,
+    email: formData.email,
+    mobile: formData.mobile,
+    address: formData.address
+  });
+};
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">

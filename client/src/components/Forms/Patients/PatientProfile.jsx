@@ -105,31 +105,53 @@ const PatientProfile = () => {
   };
 
   const handlePatientUpdationForm = async (formData) => {
-    try {
-      const token = localStorage.getItem("patientToken");
-      const response = await fetch(`${backendUrl}/users/update`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const token = localStorage.getItem("patientToken");
+    const formPayload = new FormData();
+    
+    // Append all fields as JSON string
+    formPayload.append('fields', JSON.stringify({
+      name: formData.name,
+      email: formData.email,
+      mobile: formData.mobile,
+      address: formData.address
+    }));
 
-      const data = await response.json();
-      if (response.ok) {
-        setPatient(data.user);
-        setShowEditForm(false);
-        toast.success("Profile updated successfully");
-      } else {
-        toast.error(data.message || "Error updating patient profile");
+    const response = await fetch(`${backendUrl}/users/update`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formPayload,
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      // Update both patient state and preview images if needed
+      setPatient(prev => ({
+        ...prev,
+        ...data.user,
+        profilePhoto: data.user.profilePhoto || prev.profilePhoto,
+        bannerImage: data.user.bannerImage || prev.bannerImage
+      }));
+      
+      if (data.user.profilePhoto) {
+        setProfilePreview(data.user.profilePhoto);
       }
-    } catch (error) {
-      console.error("Error updating patient profile:", error);
-      toast.error("Something went wrong. Please try again.");
+      if (data.user.bannerImage) {
+        setBannerPreview(data.user.bannerImage);
+      }
+      
+      setShowEditForm(false);
+      toast.success("Profile updated successfully");
+    } else {
+      toast.error(data.message || "Error updating profile");
     }
-  };
-
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem("patientToken");

@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
     otp: {
         type: String
     },
+    address: {  // Add this new field
+        type: String,
+        default: ''
+    },
     role: {
         type: String,
         enum: ['patient', 'doctor', 'hospital', 'admin'],

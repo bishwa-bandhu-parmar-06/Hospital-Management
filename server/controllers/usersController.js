@@ -141,41 +141,35 @@ module.exports.usersProfile = async (req, res) => {
 // For updating the user profile
 module.exports.updateUserDetails = async (req, res) => {
   try {
-    const { name, email, mobile } = req.body;
-    // const email = req.body;
-    // const mobile = req.body;
-    // console.log("Updating user details: ", req.body);
     const userId = req.user.id;
-    // console.log("User ID: ", userId);
-
     const user = await userModel.findById(userId);
+    
     if (!user) {
       return res.status(400).json({ message: "User Not Found" });
     }
 
-    // ✅ Optional updates: only assign if value exists
-    if (name) user.name = name;
-    if (email) user.email = email;
-    if (mobile) user.mobile = mobile;
+    // Handle text fields from either req.body or req.fields
+    const textFields = req.body.fields ? JSON.parse(req.body.fields) : req.body;
+    
+    if (textFields.name) user.name = textFields.name;
+    if (textFields.email) user.email = textFields.email;
+    if (textFields.mobile) user.mobile = textFields.mobile;
+    if (textFields.address) user.address = textFields.address;
 
-    // ✅ If new profile photo uploaded, set Cloudinary URL
+    // Handle file uploads
     if (req.files?.profilePhoto) {
       user.profilePhoto = req.files.profilePhoto[0].path;
     }
-
-    // Handle banner image
     if (req.files?.bannerImage) {
       user.bannerImage = req.files.bannerImage[0].path;
     }
 
-    await user.save();
-    return res
-      .status(200)
-      .json({ message: "Patient Details Updated Successfully", user:{
-        ...user._doc,
-        profilePhoto: user.profilePhoto,
-        bannerImage: user.bannerImage
-      } });
+    const updatedUser = await user.save();
+    
+    return res.status(200).json({ 
+      message: "Profile Updated Successfully", 
+      user: updatedUser 
+    });
   } catch (error) {
     console.error("Error in updateUserDetails: ", error);
     return res.status(500).json({ message: "Internal Server Error" });
