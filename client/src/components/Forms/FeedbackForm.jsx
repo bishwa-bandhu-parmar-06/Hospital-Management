@@ -175,7 +175,7 @@ const FeedbackForm = ({ onClose }) => {
               type="text"
               value={formData.name}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--color-accent)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+              className="w-full p-2 border border-[var(--color-accent)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] text-[var(--color-text-primary)]"
               required
               disabled={isSubmitting}
             />
@@ -194,7 +194,7 @@ const FeedbackForm = ({ onClose }) => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-2 border border-[var(--color-accent)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
+              className="w-full p-2 border border-[var(--color-accent)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] text-[var(--color-text-primary)]"
               required
               disabled={isSubmitting}
             />
