@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
-
+import { useNavigate } from 'react-router-dom';
 const PartnerHomePage = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPartnerHospitals = async () => {
