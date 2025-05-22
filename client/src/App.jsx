@@ -136,7 +136,7 @@ const App = () => {
             />
             <Route path="/pending-approval" element={<PendingApprovalPage />} />
             <Route path="/rejectionpage" element={<RejectedApprovalPage />} />
-            <Route path="/hospital/:hospitalId" element={<HospitalDetails />} />
+            <Route path="/hospital/:id" element={<HospitalDetails />} />
             <Route path="/hospitals" element={<AllHospitals />} />
             <Route
               path="/book-appointment"
