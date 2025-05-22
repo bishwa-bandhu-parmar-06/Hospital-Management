@@ -7,7 +7,7 @@ import { useAppointment } from '../../../context/AppointmentContext';
 import { jwtDecode } from 'jwt-decode';
 
 const HospitalDetails = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const [hospital, setHospital] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
