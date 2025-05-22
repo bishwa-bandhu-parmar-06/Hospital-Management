@@ -8,11 +8,14 @@ import AllDoctors from "../Doctors/AllDoctors";
 import { FaPencilAlt } from "react-icons/fa";
 import AllHospitals from "../Hospitals/AllHospitals";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 const AdminProfile = () => {
   const backendUrl =
-    import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+    import.meta.env.VITE_BACKEND_URI;
 
+  const navigate = useNavigate();
   // State to manage the admin profile data
   const [admin, setAdmin] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -169,7 +172,7 @@ const handleFileChange = async (e, type) => {
         localStorage.removeItem("adminToken");
         setAdmin(null);
         toast.success("Logout successful");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error logging out: ", data.message);
       }
@@ -194,7 +197,7 @@ const handleFileChange = async (e, type) => {
         localStorage.removeItem("adminToken");
         setAdmin(null);
         toast.success("Account Deleted Successfully");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error Deleting Account: ", data.message);
         toast.error("Error Deleting Account");

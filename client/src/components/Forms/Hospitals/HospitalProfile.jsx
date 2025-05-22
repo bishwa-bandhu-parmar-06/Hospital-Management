@@ -10,10 +10,10 @@ import axios from "axios";
 import HospitalsDoctors from "./HospitalsDoctors";
 import PendingHospitalsAppoinments from "./PendingHospitalsAppoinments";
 import HospitalsAppointment from "./HospitalsAppointment";
-
+import { useNavigate } from "react-router-dom";
 const HospitalProfile = () => {
-  const backendUrl =
-    import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl =import.meta.env.VITE_BACKEND_URI;
+  const navigate = useNavigate();
 
   const [activeComponent, setActiveComponent] = useState("hospitalsDoctors");
   const [hospital, setHospital] = useState(null);
@@ -147,7 +147,7 @@ const HospitalProfile = () => {
         localStorage.removeItem("hospitalToken");
         setHospital(null);
         toast.success("Logout successful");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error logging out: ", data.message);
       }
@@ -171,7 +171,7 @@ const HospitalProfile = () => {
         localStorage.removeItem("hospitalToken");
         setHospital(null);
         toast.success("Account Deleted Successfully");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error Deleting Account: ", data.message);
         toast.error("Error Deleting Account");

@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { useNavigate } from 'react-router-dom';
 const PartnerHomePage = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+  const backendUrl = import.meta.env.VITE_BACKEND_URI;
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
 const navigate = useNavigate();
@@ -43,7 +43,7 @@ const navigate = useNavigate();
   }, [backendUrl]);
 
   const handleNavigation = () => {
-    window.location.href = "/auth";
+    navigate("/auth");
   };
 const handleHospitalClick = (hospitalId) => {
     navigate(`/hospital/${hospitalId}`);
@@ -110,7 +110,6 @@ const handleHospitalClick = (hospitalId) => {
                   </div>
                 </div>
                 <button 
-                  // onClick={() => window.location.href = `/hospital/${hospital._id}`}
                   onClick={() => handleHospitalClick(hospital._id)}
                   className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-accent transition-colors duration-300"
                 >

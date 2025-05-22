@@ -167,7 +167,7 @@ const PatientProfile = () => {
         localStorage.removeItem("patientToken");
         setPatient(null);
         toast.success("Logout successful");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error logging out: ", data.message);
       }
@@ -191,7 +191,7 @@ const PatientProfile = () => {
         localStorage.removeItem("patientToken");
         setPatient(null);
         toast.success("Account Deleted Successfully");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error Deleting Account: ", data.message);
         toast.error("Error Deleting Account");

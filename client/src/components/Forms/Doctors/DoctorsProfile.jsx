@@ -7,9 +7,11 @@ import { FaPencilAlt } from "react-icons/fa";
 import axios from "axios";
 import MyAppointments from "./MyAppointments";
 import PendingAppointments from "./PendingAppointments";
+import { useNavigate } from "react-router-dom";
 const DoctorsProfile = () => {
   const backendUrl =
-    import.meta.env.VITE_BACKEND_URI || "http://localhost:3000/api/v1";
+    import.meta.env.VITE_BACKEND_URI;
+  const navigate = useNavigate();
   const [activeComponent, setActiveComponent] = useState("myappointments");
   const [doctor, setDoctor] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -167,7 +169,7 @@ const DoctorsProfile = () => {
         localStorage.removeItem("doctorToken");
         setDoctor(null);
         toast.success("Logout successful");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error logging out: ", data.message);
       }
@@ -191,7 +193,7 @@ const DoctorsProfile = () => {
         localStorage.removeItem("doctorToken");
         setDoctor(null);
         toast.success("Account Deleted Successfully");
-        window.location.href = "/auth";
+        navigate("/auth");
       } else {
         console.error("Error Deleting Account: ", data.message);
         toast.error("Error Deleting Account");
