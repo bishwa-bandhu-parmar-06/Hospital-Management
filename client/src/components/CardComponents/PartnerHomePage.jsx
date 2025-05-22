@@ -44,7 +44,9 @@ const PartnerHomePage = () => {
   const handleNavigation = () => {
     window.location.href = "/auth";
   };
-
+const handleHospitalClick = (hospitalId) => {
+    navigate(`/hospital/${hospitalId}`);
+  };
   if (loading) {
     return <Loader />;
   }
@@ -107,7 +109,8 @@ const PartnerHomePage = () => {
                   </div>
                 </div>
                 <button 
-                  onClick={() => window.location.href = `/hospital/${hospital._id}`}
+                  // onClick={() => window.location.href = `/hospital/${hospital._id}`}
+                  onClick={() => handleHospitalClick(hospital._id)}
                   className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-accent transition-colors duration-300"
                 >
                   View Details
